@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eknatha Reddy Puli — Senior Staff Engineer · Platform Engineering &amp; SRE</title>
+<meta name="description" content="Eknatha Reddy Puli — Senior Staff Engineer in Bengaluru. Fourteen years designing, operating and troubleshooting mission-critical infrastructure across Linux, Kubernetes, OpenStack and cloud.">
+<link rel="canonical" href="https://eknathareddy.com/">
+<meta name="theme-color" content="#0A1013">
+
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Eknatha Reddy Puli — Senior Staff Engineer · Platform Engineering &amp; SRE">
+<meta property="og:description" content="Fourteen years designing, operating and troubleshooting mission-critical infrastructure across Linux, Kubernetes, OpenStack and cloud.">
+<meta property="og:url" content="https://eknathareddy.com/">
+<meta property="og:image" content="https://eknathareddy.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230A1013'/><path d='M9 9h14M9 16h11M9 23h14' stroke='%23C8A56A' stroke-width='2.4' stroke-linecap='round'/></svg>">
+
+<style>
+/* ═══════════════════════════════════════════════════
+   TOKENS
+   palette  petrol black · warm ivory · aged brass
+   type     system grotesque display · serif thesis · mono data
+   ═══════════════════════════════════════════════════ */
+:root{
+  --void:#0A1013;
+  --deep:#0E161A;
+  --panel:#111C21;
+  --line:#1D2C33;
+  --line-2:#294049;
+  --ivory:#EDE8DE;
+  --ivory-2:#C3C7C4;
+  --dim:#7E8F94;
+  --brass:#C8A56A;
+  --brass-lo:#8E7647;
+  --brass-glow:rgba(200,165,106,.14);
+  --live:#4FA98A;
+
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+
+  --pad:clamp(22px,5.5vw,84px);
+  --maxw:1180px;
+  --rule:1px solid var(--line);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+body{
+  margin:0;
+  background:var(--void);
+  color:var(--ivory);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+  -webkit-tap-highlight-color:rgba(200,165,106,.18);
+}
+::selection{background:var(--brass);color:var(--void)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--brass);outline-offset:4px;border-radius:2px}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+/* The rail is fixed, so anchored sections need clearance. */
+section[id],main[id]{scroll-margin-top:84px}
+@media (max-width:620px){section[id],main[id]{scroll-margin-top:104px}}
+
+.eyebrow{
+  font-family:var(--mono);font-size:10.5px;font-weight:500;
+  letter-spacing:.26em;text-transform:uppercase;color:var(--brass);
+  margin:0;display:flex;align-items:center;gap:12px;
+}
+.eyebrow::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,var(--line-2),transparent)}
+
+/* ═══════ RAIL ═══════ */
+.rail{
+  position:fixed;inset:0 0 auto 0;z-index:50;
+  background:rgba(10,16,19,.72);
+  -webkit-backdrop-filter:saturate(180%) blur(14px);
+  backdrop-filter:saturate(180%) blur(14px);
+  border-bottom:var(--rule);
+}
+.rail__in{
+  max-width:var(--maxw);margin:0 auto;padding:14px var(--pad);
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+}
+.rail__mark{
+  font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.1em;
+  text-decoration:none;color:var(--ivory);white-space:nowrap;
+}
+.rail__mark b{color:var(--brass);font-weight:600}
+.rail__nav{display:none;gap:30px}
+@media (min-width:900px){.rail__nav{display:flex}}
+.rail__nav a{
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--dim);text-decoration:none;transition:color .2s ease;
+}
+.rail__nav a:hover{color:var(--brass)}
+.live{
+  display:inline-flex;align-items:center;gap:8px;white-space:nowrap;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--live);border:1px solid rgba(79,169,138,.32);border-radius:999px;padding:5px 12px;
+}
+.live i{width:6px;height:6px;border-radius:50%;background:var(--live);flex:none}
+@media (prefers-reduced-motion:no-preference){.live i{animation:breathe 2.8s ease-in-out infinite}}
+@keyframes breathe{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(79,169,138,.5)}50%{opacity:.5;box-shadow:0 0 0 5px rgba(79,169,138,0)}}
+
+.rail__right{display:flex;align-items:center;gap:16px;flex:none}
+
+/* ═══════ STACK STRIP ═══════ */
+.stack{
+  margin:0;white-space:nowrap;
+  font-family:var(--mono);font-size:10.5px;font-weight:500;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--dim);
+}
+.stack i{color:var(--brass);font-style:normal;padding:0 8px;opacity:.85}
+
+@media (max-width:900px){ .live{display:none} }
+@media (max-width:620px){
+  .rail__in{flex-wrap:wrap;row-gap:9px;padding:11px var(--pad)}
+  .rail__right{width:100%}
+  .stack{font-size:9.5px;letter-spacing:.14em}
+  .stack i{padding:0 6px}
+}
+@media (max-width:400px){
+  .stack{white-space:normal;line-height:1.7;font-size:9px;letter-spacing:.1em}
+  .stack i{padding:0 4px}
+}
+
+/* ═══════ HERO ═══════ */
+.hero{position:relative;padding:clamp(130px,20vh,210px) 0 clamp(70px,11vw,130px);overflow:hidden}
+.hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(to right,rgba(200,165,106,.055) 1px,transparent 1px),
+    linear-gradient(to bottom,rgba(200,165,106,.055) 1px,transparent 1px);
+  background-size:74px 74px;
+  -webkit-mask-image:radial-gradient(115% 82% at 12% 0%,#000 0%,transparent 72%);
+  mask-image:radial-gradient(115% 82% at 12% 0%,#000 0%,transparent 72%);
+}
+.hero::after{
+  content:"";position:absolute;top:-32%;right:-16%;width:66vw;height:66vw;max-width:820px;max-height:820px;
+  background:radial-gradient(circle,var(--brass-glow) 0%,transparent 62%);
+  pointer-events:none;
+}
+.hero__in{position:relative;z-index:1}
+.hero h1{
+  margin:26px 0 0;
+  font-size:clamp(38px,9.4vw,112px);
+  font-weight:700;
+  letter-spacing:-.052em;
+  line-height:.86;
+  color:var(--ivory);
+}
+.hero h1 span{display:block;color:var(--brass)}
+.hero__role{
+  margin:30px 0 0;
+  font-family:var(--mono);font-size:clamp(11px,1.5vw,13.5px);
+  letter-spacing:.24em;text-transform:uppercase;color:var(--ivory-2);
+}
+.hero__thesis{
+  margin:30px 0 0;max-width:47ch;
+  font-family:var(--serif);
+  font-size:clamp(19px,2.5vw,27px);
+  line-height:1.48;letter-spacing:-.012em;color:var(--ivory-2);
+}
+.hero__thesis em{color:var(--brass);font-style:italic}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:44px}
+.btn{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+  text-decoration:none;padding:15px 26px;border-radius:2px;
+  border:1px solid var(--line-2);color:var(--ivory);
+  transition:border-color .22s ease,color .22s ease,background .22s ease,transform .22s ease;
+}
+.btn:hover{border-color:var(--brass);color:var(--brass);transform:translateY(-2px)}
+.btn--solid{background:var(--brass);border-color:var(--brass);color:var(--void);font-weight:600}
+.btn--solid:hover{background:#D9B981;border-color:#D9B981;color:var(--void)}
+
+/* ═══════ SECTION ═══════ */
+.sec{padding:clamp(64px,9vw,124px) 0;border-top:var(--rule)}
+.sec__head{margin-bottom:clamp(32px,4.5vw,54px);max-width:70ch}
+.sec__head h2{
+  margin:20px 0 0;font-size:clamp(28px,4.4vw,50px);
+  font-weight:700;letter-spacing:-.038em;line-height:1.04;
+}
+.sec__head p{margin:16px 0 0;color:var(--dim);font-size:16px;max-width:56ch}
+
+/* ═══════ ABOUT ═══════ */
+.about{max-width:66ch}
+.about p{margin:20px 0 0;color:var(--ivory-2);font-size:16.5px}
+.about p:first-child{margin:0}
+.about__lead{
+  font-family:var(--serif);
+  font-size:clamp(20px,2.6vw,28px);
+  line-height:1.45;letter-spacing:-.012em;
+  color:var(--ivory);
+  padding-left:22px;border-left:2px solid var(--brass);
+}
+@media (max-width:520px){.about__lead{padding-left:16px}.about p{font-size:15.5px}}
+
+/* ═══════ SPEC SHEET ═══════ */
+.spec{
+  display:grid;grid-template-columns:1fr;
+  border:var(--rule);border-radius:3px;background:var(--deep);overflow:hidden;
+}
+@media (min-width:760px){.spec{grid-template-columns:1fr 1fr}}
+.spec__row{
+  display:flex;align-items:baseline;justify-content:space-between;gap:18px;
+  padding:19px 24px;border-bottom:var(--rule);
+  font-family:var(--mono);font-size:13px;
+}
+.spec__row dt{color:var(--dim);letter-spacing:.04em;margin:0;min-width:0;overflow-wrap:anywhere}
+.spec__row dd{margin:0;color:var(--ivory);font-weight:600;text-align:right;white-space:nowrap}
+.spec__row dd b{color:var(--brass);font-weight:600}
+@media (min-width:760px){
+  .spec__row:nth-child(odd){border-right:var(--rule)}
+  .spec__row:nth-last-child(-n+2){border-bottom:0}
+}
+@media (max-width:759px){.spec__row:last-child{border-bottom:0}}
+
+/* ═══════ SERVICE HISTORY — accordion ═══════ */
+.xps{border-top:var(--rule)}
+.xp{border-bottom:var(--rule)}
+
+.xp__head{
+  width:100%;appearance:none;background:none;border:0;cursor:pointer;
+  display:grid;gap:10px 28px;align-items:start;
+  grid-template-columns:1fr auto;
+  grid-template-areas:"yr mark" "id id";
+  padding:24px 0;text-align:left;color:inherit;font:inherit;
+  transition:padding-left .3s cubic-bezier(.16,.84,.34,1);
+}
+.xp__yr{grid-area:yr}
+.xp__id{grid-area:id}
+.xp__mark{grid-area:mark}
+@media (min-width:820px){
+  .xp__head{
+    grid-template-columns:172px 1fr auto;
+    grid-template-areas:"yr id mark";
+    align-items:center;padding:26px 0;
+  }
+  .xp__head:hover{padding-left:14px}
+}
+.xp__head:hover .xp__role{color:var(--brass)}
+
+.xp__yr{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;
+  color:var(--brass);white-space:nowrap;
+}
+.xp__id{min-width:0}
+.xp__role{
+  display:block;font-size:clamp(18px,2.3vw,22px);font-weight:650;
+  letter-spacing:-.026em;line-height:1.22;transition:color .2s ease;
+}
+.xp__org{color:var(--brass)}
+.xp__focus{
+  display:block;margin-top:7px;
+  font-size:14.5px;color:var(--ivory-2);letter-spacing:-.005em;
+}
+.xp__where{
+  display:block;margin-top:6px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dim);
+}
+
+/* the +/− marker */
+.xp__mark{position:relative;width:15px;height:15px;flex:none;justify-self:end;margin-top:2px}
+.xp__mark::before,.xp__mark::after{
+  content:"";position:absolute;left:0;top:7px;width:15px;height:1px;
+  background:var(--dim);transition:transform .34s cubic-bezier(.16,.84,.34,1),background .2s ease;
+}
+.xp__mark::after{transform:rotate(90deg)}
+.xp__head:hover .xp__mark::before,.xp__head:hover .xp__mark::after{background:var(--brass)}
+.xp__head[aria-expanded="true"] .xp__mark::before,
+.xp__head[aria-expanded="true"] .xp__mark::after{background:var(--brass)}
+.xp__head[aria-expanded="true"] .xp__mark::after{transform:rotate(180deg)}
+
+/* the expanding region */
+.xp__body{overflow:hidden;max-height:0;transition:max-height .42s cubic-bezier(.16,.84,.34,1)}
+@media (prefers-reduced-motion:reduce){
+  .xp__body{transition:none}
+  .xp__head,.xp__mark::before,.xp__mark::after{transition:none}
+}
+.xp__inner{padding:0 0 34px}
+@media (min-width:820px){.xp__inner{padding-left:200px}}
+
+.xp__summary{margin:0;color:var(--ivory-2);max-width:62ch;font-size:16.5px}
+.xp__arc{margin:24px 0 0;padding:0;list-style:none;max-width:60ch;border-left:1px solid var(--line)}
+.xp__arc li{
+  position:relative;padding:0 0 0 26px;margin:11px 0;
+  font-family:var(--mono);font-size:12.5px;letter-spacing:.02em;color:var(--ivory-2);
+}
+.xp__arc li::before{
+  content:"";position:absolute;left:-4px;top:7px;width:7px;height:7px;border-radius:50%;
+  background:var(--void);border:1px solid var(--brass);
+}
+.xp__list{margin:24px 0 0;padding:0;list-style:none;max-width:66ch}
+.xp__list li{position:relative;padding:0 0 0 26px;margin:12px 0;color:var(--ivory-2);font-size:15.5px}
+.xp__list li::before{content:"";position:absolute;left:2px;top:11px;width:9px;height:1px;background:var(--brass)}
+.xp__stack{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 0;padding:0;list-style:none}
+.xp__stack li{
+  font-family:var(--mono);font-size:11.5px;color:var(--ivory-2);
+  padding:6px 11px;border:var(--rule);border-radius:2px;background:var(--deep);
+}
+
+/* a break in service, shown rather than glossed over */
+.xps__gap{
+  display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:var(--rule);
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);
+}
+.xps__gap::before{
+  content:"";width:26px;height:1px;flex:none;
+  background:repeating-linear-gradient(90deg,var(--line-2) 0 4px,transparent 4px 8px);
+}
+
+@media (max-width:520px){
+  .sec{padding:48px 0}
+  .sec__head{margin-bottom:26px}
+  .tab{padding:12px 14px 13px;font-size:10px;letter-spacing:.14em}
+  .tab__n{padding:2px 5px}
+  .btn{padding:14px 20px;font-size:11px;letter-spacing:.13em}
+  .cta{gap:10px}
+  .links{gap:16px;font-size:12px}
+  .xp__inner{padding-bottom:28px}
+  .spec__row{padding:14px 16px;font-size:11.5px;gap:10px}
+  .spec__row dt{overflow-wrap:anywhere}
+}
+
+/* ═══════ TOOLCHAIN ═══════ */
+.tool{border-top:var(--rule)}
+.tool__row{display:grid;grid-template-columns:1fr;gap:14px;padding:24px 0;border-bottom:var(--rule)}
+@media (min-width:820px){.tool__row{grid-template-columns:210px 1fr;gap:34px;align-items:start}}
+.tool__row h3{
+  margin:0;font-family:var(--mono);font-size:10.5px;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--brass);padding-top:7px;
+}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.chips li{
+  font-family:var(--mono);font-size:12px;color:var(--ivory-2);
+  padding:7px 13px;border:var(--rule);border-radius:2px;background:var(--deep);
+  transition:border-color .2s ease,color .2s ease;
+}
+.chips li:hover{border-color:var(--brass-lo);color:var(--ivory)}
+
+/* ═══════ CERTIFICATIONS ═══════ */
+.certs{
+  display:grid;gap:1px;background:var(--line);
+  border:var(--rule);border-radius:3px;overflow:hidden;
+}
+@media (min-width:620px){.certs{grid-template-columns:1fr 1fr}}
+@media (min-width:1000px){.certs{grid-template-columns:repeat(3,1fr)}}
+
+.cert{
+  background:var(--deep);padding:24px 22px;
+  display:flex;flex-direction:column;gap:11px;
+}
+.cert__top{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.cert__abbr{
+  font-family:var(--mono);font-size:11px;font-weight:600;
+  letter-spacing:.2em;color:var(--brass);
+}
+.cert__status{
+  display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dim);
+}
+.cert__status i{width:6px;height:6px;border-radius:50%;background:var(--dim);flex:none}
+.cert--active .cert__status{color:var(--live)}
+.cert--active .cert__status i{background:var(--live)}
+.cert--progress .cert__status{color:var(--brass)}
+.cert--progress .cert__status i{background:var(--brass)}
+.cert--expired .cert__status{color:var(--dim)}
+.cert--expired .cert__status i{background:transparent;border:1px solid var(--dim)}
+
+.cert__name{font-size:16.5px;font-weight:650;letter-spacing:-.02em;line-height:1.32}
+.cert__meta{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;color:var(--dim);
+}
+.cert__verify{
+  margin-top:auto;padding-top:6px;text-decoration:none;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dim);transition:color .2s ease;
+}
+.cert__verify:hover{color:var(--brass)}
+
+/* ═══════ TABS ═══════ */
+.tabs{
+  display:flex;gap:4px;flex-wrap:wrap;
+  border-bottom:var(--rule);margin-bottom:4px;
+}
+.tab{
+  position:relative;appearance:none;background:none;border:0;
+  padding:14px 20px 15px;cursor:pointer;
+  font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--dim);transition:color .22s ease;
+  display:inline-flex;align-items:center;gap:9px;
+}
+.tab:first-child{padding-left:0}
+.tab:hover{color:var(--ivory-2)}
+.tab[aria-selected="true"]{color:var(--ivory)}
+.tab::after{
+  content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;
+  background:var(--brass);transform:scaleX(0);transform-origin:left;
+  transition:transform .32s cubic-bezier(.16,.84,.34,1);
+}
+.tab:first-child::after{left:0}
+.tab[aria-selected="true"]::after{transform:scaleX(1)}
+@media (prefers-reduced-motion:reduce){.tab::after{transition:none}}
+.tab__n{
+  font-size:10px;letter-spacing:.06em;color:var(--brass);
+  border:1px solid var(--line);border-radius:2px;padding:2px 6px;line-height:1.3;
+}
+.tab[aria-selected="true"] .tab__n{border-color:var(--brass-lo)}
+.panel[hidden]{display:none}
+.panel__intro{color:var(--dim);font-size:15px;margin:26px 0 0;max-width:58ch}
+.empty{
+  padding:44px 0;border-top:var(--rule);
+  font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;color:var(--dim);
+}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.tags span{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);border:1px solid var(--line);border-radius:2px;padding:3px 8px;
+}
+
+/* ═══════ ROWS ═══════ */
+.rows{list-style:none;margin:0;padding:0;border-top:var(--rule)}
+.rows li{border-bottom:var(--rule)}
+.rows a{
+  display:grid;grid-template-columns:1fr;gap:6px;
+  padding:28px 0;text-decoration:none;
+  transition:padding-left .3s cubic-bezier(.16,.84,.34,1);
+}
+@media (min-width:820px){
+  .rows a{grid-template-columns:150px 1fr 90px;gap:34px;align-items:baseline}
+  .rows a:hover{padding-left:14px}
+}
+.rows__meta{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--brass)}
+.rows__title{font-size:21px;font-weight:650;letter-spacing:-.024em;transition:color .2s ease}
+.rows__dek{display:block;margin-top:7px;color:var(--dim);font-size:15px;font-weight:400;letter-spacing:0;max-width:64ch}
+.rows__go{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);text-align:right;transition:color .2s ease}
+.rows a:hover .rows__title{color:var(--brass)}
+.rows a:hover .rows__go{color:var(--brass)}
+
+/* ═══════ CLOSE ═══════ */
+.close{position:relative;padding:clamp(78px,12vw,150px) 0;border-top:var(--rule);overflow:hidden}
+.close::after{
+  content:"";position:absolute;bottom:-46%;left:-12%;width:62vw;height:62vw;max-width:760px;max-height:760px;
+  background:radial-gradient(circle,var(--brass-glow) 0%,transparent 62%);pointer-events:none;
+}
+.close__in{position:relative;z-index:1}
+.close h2{
+  margin:22px 0 0;font-size:clamp(32px,6vw,68px);font-weight:700;
+  letter-spacing:-.042em;line-height:1.02;max-width:16ch;
+}
+.close p{margin:22px 0 0;color:var(--dim);max-width:46ch;font-size:17px}
+.links{display:flex;flex-wrap:wrap;gap:28px;margin-top:40px;font-family:var(--mono);font-size:13px}
+.links a{text-decoration:none;color:var(--ivory);border-bottom:1px solid var(--line-2);padding-bottom:4px;transition:color .2s ease,border-color .2s ease}
+.links a:hover{color:var(--brass);border-color:var(--brass)}
+.links__primary{color:var(--brass);border-color:var(--brass-lo)}
+
+footer{border-top:var(--rule);padding:30px 0 46px}
+.foot{
+  display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);
+}
+
+/* ═══════ REVEAL ═══════ */
+/* Sections only start hidden once JS has added .js-anim to <html>.
+   If the script fails or never runs, everything stays visible. */
+@media (prefers-reduced-motion:no-preference){
+  .js-anim .rise{opacity:0;transform:translateY(22px);transition:opacity .78s cubic-bezier(.16,.84,.34,1),transform .78s cubic-bezier(.16,.84,.34,1)}
+  .js-anim .rise.in{opacity:1;transform:none}
+}
+
+/* ═══════ PRINT — page doubles as a résumé ═══════ */
+@media print{
+  :root{--void:#fff;--deep:#fff;--panel:#fff;--line:#c9c9c9;--line-2:#c9c9c9;--ivory:#000;--ivory-2:#222;--dim:#555;--brass:#6b5220}
+  body{background:#fff;color:#000;font-size:10.5pt}
+  .rail,.cta,.rows__go,.hero::before,.hero::after,.close::after{display:none!important}
+  .hero{padding:0 0 14px}
+  .hero h1{font-size:26pt}
+  .sec,.close{padding:14px 0;break-inside:avoid}
+  .rise{opacity:1!important;transform:none!important}
+  .tabs{display:none!important}
+  .panel[hidden]{display:block!important}
+  .xp{break-inside:avoid}
+  .xp__body{max-height:none!important;overflow:visible!important}
+  .xp__mark{display:none!important}
+  .xp__inner{padding-left:0!important}
+  .rows a::after{content:" — " attr(href);font-family:var(--mono);font-size:7.5pt;color:#666}
+}
+</style>
+</head>
+<body>
+
+<header class="rail">
+  <div class="rail__in">
+    <a class="rail__mark" href="#top">eknatha<b>reddy</b>.com</a>
+    <nav class="rail__nav" aria-label="Sections">
+      <a href="#history">History</a>
+      <a href="#toolchain">Toolchain</a>
+      <a href="#certs">Certs</a>
+      <a href="#notes">Notes</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="rail__right">
+      <!-- Delete this <span> if you'd rather not signal availability publicly -->
+      <span class="live"><i aria-hidden="true"></i>Open to roles</span>
+
+      <p class="stack">Kubernetes<i>·</i>Terraform<i>·</i>Cloud<i>·</i>Linux<i>·</i>Go</p>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ══════════ HERO ══════════ -->
+  <section class="hero">
+    <div class="wrap hero__in">
+      <p class="eyebrow">Bengaluru, India &middot; open to onsite / remote</p>
+      <h1>Eknatha&nbsp;Reddy <span>Puli</span></h1>
+      <p class="hero__role">Senior Staff Engineer &nbsp;&middot;&nbsp; Platform Engineering &amp; SRE</p>
+      <p class="hero__thesis">
+        Fourteen years keeping enterprise infrastructure alive in production —
+        Linux, virtualization, Kubernetes and OpenStack, most of it <em>on call</em>.
+        I build the paved road: automation that removes the repetitive work, and
+        observability that surfaces failure before a customer does.
+      </p>
+      <div class="cta">
+        <a class="btn btn--solid" href="/eknatha-reddy-puli-resume.pdf">Download résumé</a>
+        <a class="btn" href="https://www.linkedin.com/in/eknathareddypuli/" rel="me noopener">LinkedIn</a>
+        <a class="btn" href="https://github.com/eknatha" rel="me noopener">GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ ABOUT ══════════ -->
+  <section class="wrap sec rise" id="about">
+    <div class="sec__head">
+      <p class="eyebrow">About</p>
+    </div>
+    <div class="about">
+      <p class="about__lead">
+        I design, operate and troubleshoot mission-critical platforms — the
+        infrastructure other teams depend on and rarely think about until it
+        breaks.
+      </p>
+      <p>
+        Fourteen years across enterprise infrastructure, virtualization, Linux
+        and production support, from carrier networks at Ericsson to ad-tech at
+        scale to hybrid cloud at IBM. The through-line is reliability: making
+        systems legible, making failure recoverable, and making the fix
+        repeatable so nobody has to remember it at 3am.
+      </p>
+      <p>
+        Day to day that means Kubernetes, Terraform, OpenStack and cloud
+        platforms across AWS, Azure and GCP — automating repetitive operations,
+        simplifying how infrastructure gets managed, and giving engineering
+        teams a path to production that doesn't route through a ticket queue.
+        Currently going deeper on Go and Google Cloud.
+      </p>
+      <p>
+        Outside of work I make practical visual guides on Kubernetes, Linux,
+        Docker, Git, Terraform and cloud infrastructure, for engineers trying to
+        get a grip on concepts that are usually explained badly.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══════════ SPEC ══════════ -->
+  <section class="wrap sec rise">
+    <div class="sec__head">
+      <p class="eyebrow">At a glance</p>
+      <h2>Operating numbers</h2>
+    </div>
+    <dl class="spec">
+      <div class="spec__row"><dt>years.infrastructure.engineering</dt><dd>14<b>+</b></dd></div>
+      <div class="spec__row"><dt>primary.clouds</dt><dd>AWS &middot; GCP &middot; Azure &middot; hybrid</dd></div>
+      <div class="spec__row"><dt>orchestration</dt><dd>Kubernetes &middot; OpenStack</dd></div>
+      <div class="spec__row"><dt>base</dt><dd>Bengaluru, India &middot; onsite / remote</dd></div>
+    </dl>
+  </section>
+
+  <!-- ══════════ TRACK ══════════ -->
+  <section class="wrap sec rise" id="history">
+    <div class="sec__head">
+      <p class="eyebrow">Service history</p>
+      <h2>Seven teams since 2010</h2>
+      <p>Newest first. Select a role to expand it.</p>
+    </div>
+    <div class="xps" id="xpList"></div>
+  </section>
+
+  <!-- ══════════ TOOLCHAIN ══════════ -->
+  <section class="wrap sec rise" id="toolchain">
+    <div class="sec__head">
+      <p class="eyebrow">Toolchain</p>
+      <h2>What I run</h2>
+      <p>Listed honestly — what I've operated at scale, and what I'm still growing into.</p>
+    </div>
+    <div class="tool">
+      <div class="tool__row">
+        <h3>Orchestration</h3>
+        <ul class="chips"><li>Kubernetes</li><li>OpenShift</li><li>Helm</li><li>Docker</li><li>OpenStack</li></ul>
+      </div>
+      <div class="tool__row">
+        <h3>Infrastructure as code</h3>
+        <ul class="chips"><li>Terraform</li><li>OpenTofu</li><li>Ansible</li><li>Packer</li></ul>
+      </div>
+      <div class="tool__row">
+        <h3>Cloud</h3>
+        <ul class="chips"><li>AWS</li><li>Azure</li><li>Hybrid &amp; private cloud</li><li>GCP — working knowledge</li></ul>
+      </div>
+      <div class="tool__row">
+        <h3>Databases</h3>
+        <ul class="chips"><li>MySQL</li><li>PostgreSQL</li><li>Oracle</li><li>Redis</li></ul>
+      </div>
+      <div class="tool__row">
+        <h3>Systems</h3>
+        <ul class="chips"><li>Linux internals</li><li>Networking</li><li>Storage</li><li>Capacity &amp; performance</li></ul>
+      </div>
+      <div class="tool__row">
+        <h3>Reliability</h3>
+        <ul class="chips"><li>SLI / SLO / error budgets</li><li>Incident command</li><li>Prometheus</li><li>Grafana</li><li>Splunk</li></ul>
+      </div>
+      <div class="tool__row">
+        <h3>Automation</h3>
+        <ul class="chips"><li>Python</li><li>Bash</li><li>Git</li><li>CI/CD pipelines</li><li>Go — learning</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ CERTIFICATIONS ══════════ -->
+  <!-- Rendered from the CERTS object at the bottom of this file.
+       Hidden entirely while the list is empty. -->
+  <section class="wrap sec rise" id="certs" hidden>
+    <div class="sec__head">
+      <p class="eyebrow">Credentials</p>
+      <h2>Certifications</h2>
+      <p id="certsNote"></p>
+    </div>
+    <div class="certs" id="certList"></div>
+  </section>
+
+  <!-- ══════════ NOTES ══════════ -->
+  <!-- Rendered from the NOTES object at the bottom of this file.
+       Hidden entirely while all three tabs are empty. -->
+  <section class="wrap sec rise" id="notes" hidden>
+    <div class="sec__head">
+      <p class="eyebrow">Notes from production</p>
+      <h2 id="notesHeading"></h2>
+      <p id="notesBlurb"></p>
+    </div>
+
+    <div class="tabs" id="tabs" role="tablist" aria-label="Note categories"></div>
+    <div id="panels"></div>
+  </section>
+
+  <!-- ══════════ CONTACT ══════════ -->
+  <section class="close" id="contact">
+    <div class="wrap close__in rise">
+      <p class="eyebrow">Get in touch</p>
+      <h2>Tell me what's breaking.</h2>
+      <p>LinkedIn is the fastest way to reach me. I reply to anything specific about platform engineering, reliability or Kubernetes work.</p>
+      <div class="links">
+        <a class="links__primary" href="https://www.linkedin.com/in/eknathareddypuli/" rel="me noopener">Message me on LinkedIn &rarr;</a>
+        <a href="https://github.com/eknatha" rel="me noopener">GitHub</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <div class="foot">
+    <span>&copy; <span id="yr">2026</span> Eknatha Reddy Puli</span>
+    <span>Hand-written HTML &middot; no framework &middot; no analytics</span>
+  </div>
+</footer>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Person",
+  "name":"Eknatha Reddy Puli",
+  "givenName":"Eknatha Reddy",
+  "familyName":"Puli",
+  "url":"https://eknathareddy.com/",
+  "jobTitle":"Senior Staff Engineer — Platform Engineering, Cloud Infrastructure, SRE",
+  "address":{"@type":"PostalAddress","addressLocality":"Bengaluru","addressCountry":"IN"},
+  "sameAs":[
+    "https://github.com/eknatha",
+    "https://www.linkedin.com/in/eknathareddypuli/"
+  ],
+  "knowsAbout":["Kubernetes","Terraform","OpenStack","Linux","Site Reliability Engineering","Platform Engineering","AWS","Azure","Python","Observability"]
+}
+</script>
+
+<script>
+/* Each feature below runs in isolation — a fault in one can't blank
+   the rest of the page. */
+function safe(fn) {
+  try { fn(); } catch (err) { console.error('[eknathareddy.com]', err); }
+}
+
+/* ══════════════════════════════════════════════════════════
+   SECTION REVEAL
+
+   Runs first and fails open: sections are only hidden after
+   .js-anim lands on <html>, and a timeout reveals everything
+   regardless if the observer never fires.
+   ══════════════════════════════════════════════════════════ */
+safe(function () {
+  var rises = document.querySelectorAll('.rise');
+  var show = function () {
+    for (var i = 0; i < rises.length; i++) rises[i].classList.add('in');
+  };
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      !('IntersectionObserver' in window)) { show(); return; }
+
+  document.documentElement.classList.add('js-anim');
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -12% 0px', threshold: 0.06 });
+
+  for (var i = 0; i < rises.length; i++) io.observe(rises[i]);
+
+  setTimeout(show, 3000);          // failsafe
+});
+
+/* ══════════════════════════════════════════════════════════
+   SERVICE HISTORY
+
+   One object per employer, oldest first. Segment width is
+   proportional to tenure, so only `from` and `to` drive the bar.
+   A break between one `to` and the next `from` renders as a gap.
+
+     org        required — company name
+     abbr       required — 3-6 chars shown inside the segment
+     from, to   required — years; `to` is the current year if current
+     current    optional — marks it live, dot in the segment
+     dates      optional — exact span, e.g. "Feb 2010 – Nov 2010"
+     role       optional — your title there
+     focus      optional — discipline line under the title
+     location   optional — city, or "Bengaluru · Remote"
+     summary    optional — two or three sentences on the remit
+     arc        optional — org changes during your tenure
+     highlights optional — what you actually did; keep them concrete
+     stack      optional — tools, shown as chips
+
+   Everything except org/abbr/from/to can be omitted.
+   ══════════════════════════════════════════════════════════ */
+const TRACK = [
+  {
+    org: "Genisys Information Systems", abbr: "GENISYS", from: 2010, to: 2010,
+    dates: "Feb 2010 – Nov 2010",
+    role: "Junior Business Analyst",
+    summary: "Requirements gathering and reporting alongside the delivery team.",
+    highlights: [],
+    stack: ["SQL", "Reporting"]
+  },
+  {
+    org: "RCS Technologies", abbr: "RCS", from: 2010, to: 2011,
+    dates: "Nov 2010 – Aug 2011",
+    role: "System Administrator Trainee",
+    summary: "First exposure to systems administration — servers, user management and day-to-day support.",
+    highlights: [],
+    stack: ["Windows Server", "Linux", "Hardware"]
+  },
+  {
+    org: "Ericsson", abbr: "ERI", from: 2011, to: 2017,
+    role: "Systems Engineer",
+    location: "India",
+    summary: "Telecom infrastructure and Linux systems operations for carrier networks.",
+    highlights: [],
+    stack: ["Linux", "Networking", "Shell"]
+  },
+  {
+    org: "Subex", abbr: "SUBEX", from: 2017, to: 2019,
+    role: "Production Support Engineer",
+    location: "Bengaluru",
+    summary: "Production support and automation across carrier-scale analytics platforms.",
+    highlights: [],
+    stack: ["Linux", "Oracle", "Shell", "Python"]
+  },
+  {
+    org: "AT&T · Xandr · Microsoft", abbr: "AT&T", from: 2019, to: 2022,
+    role: "Site Reliability Engineer",
+    location: "Bengaluru",
+    summary: "Ad-tech platform operations at scale — Linux fleet, monitoring and incident response. One team, three parent companies.",
+    arc: [
+      "Joined AT&T",
+      "AT&T spun its advertising business into Xandr",
+      "Xandr acquired by Microsoft"
+    ],
+    highlights: [],
+    stack: ["Linux", "Monitoring", "Incident response", "Python"]
+  },
+  {
+    org: "Sterlite Technologies", abbr: "STL", from: 2022, to: 2023,
+    role: "Cloud Infrastructure Engineer",
+    location: "Bengaluru",
+    summary: "OpenStack and Kubernetes private cloud, with Terraform provisioning pipelines.",
+    highlights: [
+      "Cut provisioning time roughly 60% by replacing manual builds with Terraform modules."
+    ],
+    stack: ["OpenStack", "Kubernetes", "Terraform", "Ansible", "Linux"]
+  },
+  {
+    org: "IBM", abbr: "IBM", from: 2023, to: 2026, current: true,
+    role: "Senior Staff Software Engineer",
+    focus: "Platform Engineering · Cloud Infrastructure · SRE",
+    location: "Bengaluru",
+    summary: "Building and operating production infrastructure across Linux, Kubernetes, OpenStack and cloud platforms, with a focus on automation, reliability and platform engineering.",
+    highlights: [],
+    stack: ["Kubernetes", "Terraform", "AWS", "Azure", "Python", "Linux"]
+  }
+];
+
+safe(function () {
+  var list = document.getElementById('xpList');
+  if (!list || !TRACK.length) return;
+
+  // Newest first. TRACK stays oldest-first so gaps read naturally.
+  var ordered = TRACK.slice().reverse();
+
+  ordered.forEach(function (t, i) {
+    // A break in service is shown, not silently closed up.
+    var older = TRACK[TRACK.indexOf(t) - 1];
+    var gapAfter = older ? t.from - older.to : 0;   // months between roles is not a break
+
+    list.appendChild(item(t, i, i === 0));
+
+    if (gapAfter > 1) {
+      var gap = document.createElement('p');
+      gap.className = 'xps__gap';
+      gap.textContent = older.to + '–' + t.from + ' · break in service';
+      list.appendChild(gap);
+    }
+  });
+
+  list.addEventListener('click', function (e) {
+    var head = e.target.closest('.xp__head');
+    if (head) toggle(head);
+  });
+
+  function toggle(head) {
+    var body = document.getElementById(head.getAttribute('aria-controls'));
+    var open = head.getAttribute('aria-expanded') === 'true';
+    head.setAttribute('aria-expanded', open ? 'false' : 'true');
+    body.style.maxHeight = open ? '' : body.scrollHeight + 'px';
+  }
+
+  function item(t, i, open) {
+    var wrap = document.createElement('div');
+    wrap.className = 'xp';
+
+    // ── header row ──
+    var head = document.createElement('button');
+    head.type = 'button';
+    head.className = 'xp__head';
+    head.id = 'xph-' + i;
+    head.setAttribute('aria-expanded', open ? 'true' : 'false');
+    head.setAttribute('aria-controls', 'xpb-' + i);
+
+    var yr = document.createElement('span');
+    yr.className = 'xp__yr';
+    yr.textContent = t.dates ||
+      (t.from + '—' + (t.current ? 'present' : t.to));
+    head.appendChild(yr);
+
+    var id = document.createElement('span');
+    id.className = 'xp__id';
+
+    var role = document.createElement('span');
+    role.className = 'xp__role';
+    if (t.role) {
+      role.appendChild(document.createTextNode(t.role + ' '));
+      var org = document.createElement('span');
+      org.className = 'xp__org';
+      org.textContent = '· ' + t.org;
+      role.appendChild(org);
+    } else {
+      role.textContent = t.org;
+    }
+    id.appendChild(role);
+
+    if (t.focus) {
+      var focus = document.createElement('span');
+      focus.className = 'xp__focus';
+      focus.textContent = t.focus;
+      id.appendChild(focus);
+    }
+
+    if (t.location) {
+      var where = document.createElement('span');
+      where.className = 'xp__where';
+      where.textContent = t.location;
+      id.appendChild(where);
+    }
+    head.appendChild(id);
+
+    var mark = document.createElement('span');
+    mark.className = 'xp__mark';
+    mark.setAttribute('aria-hidden', 'true');
+    head.appendChild(mark);
+
+    wrap.appendChild(head);
+
+    // ── expanding body ──
+    var body = document.createElement('div');
+    body.className = 'xp__body';
+    body.id = 'xpb-' + i;
+    body.setAttribute('role', 'region');
+    body.setAttribute('aria-labelledby', head.id);
+
+    var inner = document.createElement('div');
+    inner.className = 'xp__inner';
+
+    if (t.summary) {
+      var sum = document.createElement('p');
+      sum.className = 'xp__summary';
+      sum.textContent = t.summary;
+      inner.appendChild(sum);
+    }
+
+    if (t.arc && t.arc.length) {
+      var arc = document.createElement('ol');
+      arc.className = 'xp__arc';
+      t.arc.forEach(function (a) {
+        var li = document.createElement('li');
+        li.textContent = a;
+        arc.appendChild(li);
+      });
+      inner.appendChild(arc);
+    }
+
+    if (t.highlights && t.highlights.length) {
+      var ul = document.createElement('ul');
+      ul.className = 'xp__list';
+      t.highlights.forEach(function (h) {
+        var li = document.createElement('li');
+        li.textContent = h;
+        ul.appendChild(li);
+      });
+      inner.appendChild(ul);
+    }
+
+    if (t.stack && t.stack.length) {
+      var chips = document.createElement('ul');
+      chips.className = 'xp__stack';
+      t.stack.forEach(function (c) {
+        var li = document.createElement('li');
+        li.textContent = c;
+        chips.appendChild(li);
+      });
+      inner.appendChild(chips);
+    }
+
+    body.appendChild(inner);
+    wrap.appendChild(body);
+
+    // The current role opens by default; measure after layout settles.
+    if (open) {
+      requestAnimationFrame(function () {
+        body.style.maxHeight = body.scrollHeight + 'px';
+      });
+    }
+    return wrap;
+  }
+
+  // Keep an open panel correctly sized when the viewport reflows.
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      var heads = list.querySelectorAll('.xp__head[aria-expanded="true"]');
+      for (var i = 0; i < heads.length; i++) {
+        var b = document.getElementById(heads[i].getAttribute('aria-controls'));
+        b.style.maxHeight = b.scrollHeight + 'px';
+      }
+    }, 150);
+  });
+});
+
+/* ══════════════════════════════════════════════════════════
+   CERTIFICATIONS
+
+   One object per credential. The section hides itself while
+   the list is empty, so delete rather than comment out.
+
+     abbr    required — short code shown at the top of the card
+     name    required — full title
+     issuer  optional — awarding body
+     status  optional — "active" | "progress" | "planned" | "expired"
+     meta    optional — dates, validity, or a one-line note
+     url     optional — public verification link
+
+   Only list what you hold or are actively pursuing, and make
+   the status honest — "active" on something lapsed is the kind
+   of thing that surfaces in a background check, not an interview.
+   ══════════════════════════════════════════════════════════ */
+const CERTS = {
+  note: "Add a verification URL wherever the issuer publishes one — an unverifiable credential is worth less than an unlisted one.",
+  items: [
+    {
+      abbr: "CKA",
+      name: "Certified Kubernetes Administrator",
+      issuer: "Cloud Native Computing Foundation",
+      status: "expired",
+      meta: "Renewal planned"
+    },
+    {
+      abbr: "OCI",
+      name: "Oracle Cloud Infrastructure Certified Foundations Associate",
+      issuer: "Oracle",
+      status: "active",
+      meta: "Issued 2025"
+    },
+    {
+      abbr: "RHCSA",
+      name: "Red Hat Certified System Administrator",
+      issuer: "Red Hat",
+      status: "active"
+    },
+    {
+      abbr: "SOLARIS",
+      name: "Oracle Solaris 10 System Administrator",
+      issuer: "Oracle",
+      status: "active"
+    },
+    {
+      abbr: "NOKIA",
+      name: "Nokia L3 NCS R20 Integration Engineer",
+      issuer: "Nokia",
+      status: "active"
+    }
+  ]
+};
+
+safe(function () {
+  var sec = document.getElementById('certs');
+  var list = document.getElementById('certList');
+  var note = document.getElementById('certsNote');
+  var navLink = document.querySelector('.rail__nav a[href="#certs"]');
+  if (!sec || !list) return;
+
+  var items = (CERTS.items || []).filter(Boolean);
+
+  if (!items.length) {                 // nothing to show — hide the section outright
+    if (navLink) navLink.remove();
+    return;
+  }
+
+  sec.hidden = false;
+  if (note && CERTS.note) note.textContent = CERTS.note;
+
+  var LABEL = {
+    active:   'Active',
+    progress: 'In progress',
+    planned:  'Planned',
+    expired:  'Expired'
+  };
+
+  items.forEach(function (c) {
+    var card = document.createElement('div');
+    card.className = 'cert' + (c.status ? ' cert--' + c.status : '');
+
+    var top = document.createElement('div');
+    top.className = 'cert__top';
+
+    var abbr = document.createElement('span');
+    abbr.className = 'cert__abbr';
+    abbr.textContent = c.abbr || '';
+    top.appendChild(abbr);
+
+    if (c.status && LABEL[c.status]) {
+      var status = document.createElement('span');
+      status.className = 'cert__status';
+      var dot = document.createElement('i');
+      dot.setAttribute('aria-hidden', 'true');
+      status.appendChild(dot);
+      status.appendChild(document.createTextNode(LABEL[c.status]));
+      top.appendChild(status);
+    }
+    card.appendChild(top);
+
+    var name = document.createElement('p');
+    name.className = 'cert__name';
+    name.textContent = c.name || '';
+    card.appendChild(name);
+
+    if (c.issuer) {
+      var issuer = document.createElement('p');
+      issuer.className = 'cert__meta';
+      issuer.textContent = c.issuer;
+      card.appendChild(issuer);
+    }
+
+    if (c.meta) {
+      var meta = document.createElement('p');
+      meta.className = 'cert__meta';
+      meta.textContent = c.meta;
+      card.appendChild(meta);
+    }
+
+    if (c.url) {
+      var verify = document.createElement('a');
+      verify.className = 'cert__verify';
+      verify.href = c.url;
+      verify.rel = 'noopener';
+      verify.textContent = 'Verify →';
+      card.appendChild(verify);
+    }
+
+    list.appendChild(card);
+  });
+});
+
+/* ══════════════════════════════════════════════════════════
+   NOTES
+
+   This file holds no notes content — not the entries, not the
+   tab labels, not the copy. All of it is generated:
+
+     notes/notes.config.json   tabs, labels, intro copy
+     notes/posts/*.md          the writing itself
+              ↓  notes/build.mjs, run by the Action on push
+     notes/index.json          the payload rendered below
+
+   To add a note:      node notes/new.mjs <type> "Title"
+   To add a category:  add a tab to notes.config.json
+                       (no change needed here)
+
+   The only thing configured on this page is where to fetch.
+   ══════════════════════════════════════════════════════════ */
+const NOTES_SOURCE = "/notes/index.json";
+
+safe(function () {
+  var sec = document.getElementById('notes');
+  var tablist = document.getElementById('tabs');
+  var panels = document.getElementById('panels');
+  var heading = document.getElementById('notesHeading');
+  var blurb = document.getElementById('notesBlurb');
+  var navLink = document.querySelector('.rail__nav a[href="#notes"]');
+  if (!sec || !tablist || !panels || !window.fetch) return hide();
+
+  fetch(NOTES_SOURCE, { cache: 'no-store' })
+    .then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(render)
+    .catch(hide);   // index not built yet, or offline — say nothing
+
+  function hide() { if (navLink) navLink.remove(); }
+
+  function render(data) {
+    var tabs = (data && Array.isArray(data.tabs)) ? data.tabs : [];
+    var total = tabs.reduce(function (n, t) { return n + (t.items || []).length; }, 0);
+
+    if (!tabs.length || (!total && data.hideUntilPublished)) return hide();
+
+    sec.hidden = false;
+    if (heading) heading.textContent = data.heading || 'Notes';
+    if (blurb) blurb.textContent = data.blurb || '';
+    tablist.textContent = '';
+    panels.textContent = '';
+
+    var buttons = [];
+
+    tabs.forEach(function (tab, index) {
+      var items = (tab.items || []).slice();
+
+      // ── tab button ──
+      var btn = document.createElement('button');
+      btn.className = 'tab';
+      btn.type = 'button';
+      btn.id = 'tab-' + tab.id;
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-controls', 'panel-' + tab.id);
+      btn.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+      btn.tabIndex = index === 0 ? 0 : -1;
+      btn.appendChild(document.createTextNode(tab.label || tab.id));
+      if (items.length) {
+        var n = document.createElement('span');
+        n.className = 'tab__n';
+        n.textContent = items.length;
+        btn.appendChild(n);
+      }
+      tablist.appendChild(btn);
+      buttons.push(btn);
+
+      // ── panel ──
+      var panel = document.createElement('div');
+      panel.className = 'panel';
+      panel.id = 'panel-' + tab.id;
+      panel.setAttribute('role', 'tabpanel');
+      panel.setAttribute('aria-labelledby', btn.id);
+      panel.hidden = index !== 0;
+
+      if (tab.intro) {
+        var intro = document.createElement('p');
+        intro.className = 'panel__intro';
+        intro.textContent = tab.intro;
+        panel.appendChild(intro);
+      }
+
+      if (!items.length) {
+        var blank = document.createElement('p');
+        blank.className = 'empty';
+        blank.textContent = tab.empty || 'Nothing published here yet.';
+        panel.appendChild(blank);
+      } else {
+        var ul = document.createElement('ul');
+        ul.className = 'rows';
+        ul.style.marginTop = '26px';
+        items.forEach(function (item) { ul.appendChild(row(item)); });
+        panel.appendChild(ul);
+      }
+
+      panels.appendChild(panel);
+    });
+
+    tablist.addEventListener('click', function (e) {
+      var b = e.target.closest('.tab');
+      if (b) select(buttons.indexOf(b));
+    });
+
+    tablist.addEventListener('keydown', function (e) {
+      var i = buttons.indexOf(document.activeElement);
+      if (i < 0) return;
+      var next =
+        e.key === 'ArrowRight' ? (i + 1) % buttons.length :
+        e.key === 'ArrowLeft'  ? (i - 1 + buttons.length) % buttons.length :
+        e.key === 'Home'       ? 0 :
+        e.key === 'End'        ? buttons.length - 1 : -1;
+      if (next >= 0) { e.preventDefault(); select(next); }
+    });
+
+    function select(i) {
+      buttons.forEach(function (b, j) {
+        var on = i === j;
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+        b.tabIndex = on ? 0 : -1;
+        document.getElementById(b.getAttribute('aria-controls')).hidden = !on;
+      });
+      buttons[i].focus();
+    }
+  }
+
+  function row(item) {
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    a.href = item.url || '#';
+
+    var meta = document.createElement('span');
+    meta.className = 'rows__meta';
+    meta.textContent = pretty(item.date);
+
+    var title = document.createElement('span');
+    title.className = 'rows__title';
+    title.appendChild(document.createTextNode(item.title || 'Untitled'));
+
+    if (item.dek) {
+      var dek = document.createElement('span');
+      dek.className = 'rows__dek';
+      dek.textContent = item.dek;
+      title.appendChild(dek);
+    }
+    if (item.tags && item.tags.length) {
+      var tags = document.createElement('span');
+      tags.className = 'tags';
+      item.tags.forEach(function (t) {
+        var el = document.createElement('span');
+        el.textContent = t;
+        tags.appendChild(el);
+      });
+      title.appendChild(tags);
+    }
+
+    var go = document.createElement('span');
+    go.className = 'rows__go';
+    go.textContent = item.readingTime || 'Read';
+
+    a.appendChild(meta); a.appendChild(title); a.appendChild(go);
+    li.appendChild(a);
+    return li;
+  }
+
+  function pretty(d) {
+    var p = String(d || '').split('-');
+    return p.length < 2 ? (d || '') : p[0] + ' · ' + p[1];
+  }
+});
+
+safe(function () {
+  document.getElementById('yr').textContent = new Date().getFullYear();
+});
+</script>
+
+</body>
+</html>
