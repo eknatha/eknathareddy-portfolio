@@ -1,5 +1,5 @@
 {
-  "heading": "Case studies, troubleshooting & postmortems",
+  "heading": "Case studies, troubleshooting, postmortems & blog",
   "blurb": "Written up as they happen. Case studies are the long form; troubleshooting is the short, specific fix; postmortems are incidents with the timeline intact.",
   "hideUntilPublished": false,
   "tabs": [
@@ -26,6 +26,14 @@
       "kicker": "Postmortem",
       "intro": "Blameless. Timeline, contributing factors, what changed afterwards. Employers anonymised.",
       "empty": "No postmortems published yet."
+    },
+    {
+      "id": "blog",
+      "type": "blog",
+      "label": "Blog",
+      "kicker": "Blog",
+      "intro": "Shorter pieces — things I've been reading, tools I've tried, opinions I'm still testing.",
+      "empty": "No blog posts published yet."
     }
   ]
 }

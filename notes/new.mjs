@@ -105,6 +105,17 @@ Follow-ups that actually shipped. "We added monitoring" is weak; name the alert 
 `
 };
 
+SKELETONS['blog'] = `Open with the thing itself — no throat-clearing, no "in this post I will".
+
+## Why it matters
+
+One or two paragraphs. What changed your mind, or what you'd tell a colleague over coffee.
+
+## What I'd watch next
+
+Where you think this goes, and what would make you wrong.
+`;
+
 const [type, ...rest] = process.argv.slice(2);
 const title = rest.join(' ').trim();
 

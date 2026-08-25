@@ -17,6 +17,7 @@
 import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execSync } from 'node:child_process';
 import matter from 'gray-matter';
 import { marked } from 'marked';
 
@@ -74,6 +75,9 @@ for (const file of files) {
   const words = content.split(/\s+/).filter(Boolean).length;
   const mins = Math.max(1, Math.round(words / 220));
   const tags = Array.isArray(fm.tags) ? fm.tags.map(String) : [];
+  const displayDate = new Date(date + 'T00:00:00Z').toLocaleDateString('en-GB', {
+    day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'
+  });
 
   const note = {
     type: fm.type,
@@ -83,6 +87,7 @@ for (const file of files) {
     title: String(fm.title),
     dek: String(fm.dek || ''),
     date,
+    displayDate,
     tags,
     readingTime: `${mins} min read`,
     url: `/notes/${slug}.html`,
@@ -111,12 +116,38 @@ const payload = {
     empty: t.empty || 'Nothing published here yet.',
     items: published
       .filter((n) => n.tab === t.id)
-      .map(({ title, dek, date, tags, url, readingTime }) =>
-        ({ title, dek, date, tags, url, readingTime }))
+      .map(({ title, dek, date, displayDate, tags, url, readingTime }) =>
+        ({ title, dek, date, displayDate, tags, url, readingTime }))
   }))
 };
 
 writeFileSync(join(HERE, 'index.json'), JSON.stringify(payload, null, 2) + '\n');
+
+// ── status.json — what the health panel reads ────────────────────────
+// Everything here is measured, not asserted. If git isn't available the
+// field is omitted rather than guessed at.
+function git(cmd) {
+  try { return execSync(cmd, { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); }
+  catch { return ''; }
+}
+
+const commit = (process.env.GITHUB_SHA || git('git rev-parse HEAD')).slice(0, 7);
+const deployLog = git('git log -n 40 --pretty=format:%cI')
+  .split('\n').filter(Boolean);
+
+const status = {
+  builtAt: new Date().toISOString(),
+  commit: commit || null,
+  branch: process.env.GITHUB_REF_NAME || git('git rev-parse --abbrev-ref HEAD') || null,
+  runner: process.env.GITHUB_ACTIONS ? 'github-actions' : 'local',
+  notes: { published: published.length, drafts },
+  pages: 1 + published.length,
+  runtimeDependencies: 0,
+  deploys: deployLog                       // ISO timestamps, newest first
+};
+
+writeFileSync(join(ROOT, 'status.json'), JSON.stringify(status, null, 2) + '\n');
+console.log(`· status.json (commit ${commit || 'unknown'}, ${deployLog.length} deploys logged)`);
 
 // ── sitemap ──────────────────────────────────────────────────────────
 writeFileSync(join(ROOT, 'sitemap.xml'),
@@ -207,7 +238,7 @@ footer.art a:hover{color:var(--brass)}
   <p class="kicker">${esc(n.kicker)}</p>
   <h1>${esc(n.title)}</h1>
   ${n.dek ? `<p class="dek">${esc(n.dek)}</p>` : ''}
-  <div class="meta"><span>${esc(n.date)}</span><span>${esc(n.readingTime)}</span>${tagLine}</div>
+  <div class="meta"><span>${esc(n.displayDate)}</span><span>${esc(n.readingTime)}</span>${tagLine}</div>
 </header>
 <article class="wrap">
 ${n.html}
