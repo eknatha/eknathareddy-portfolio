@@ -1,0 +1,31 @@
+{
+  "heading": "Case studies, troubleshooting & postmortems",
+  "blurb": "Written up as they happen. Case studies are the long form; troubleshooting is the short, specific fix; postmortems are incidents with the timeline intact.",
+  "hideUntilPublished": false,
+  "tabs": [
+    {
+      "id": "case-studies",
+      "type": "case-study",
+      "label": "Case studies",
+      "kicker": "Case study",
+      "intro": "Problem, the constraints I didn't choose, what I did, what it cost, and what I'd reverse today.",
+      "empty": "No case studies published yet."
+    },
+    {
+      "id": "troubleshooting",
+      "type": "troubleshooting",
+      "label": "Troubleshooting",
+      "kicker": "Troubleshooting",
+      "intro": "Specific failures and the path to the actual cause — including the wrong turns.",
+      "empty": "No troubleshooting notes published yet."
+    },
+    {
+      "id": "postmortems",
+      "type": "postmortem",
+      "label": "Postmortems",
+      "kicker": "Postmortem",
+      "intro": "Blameless. Timeline, contributing factors, what changed afterwards. Employers anonymised.",
+      "empty": "No postmortems published yet."
+    }
+  ]
+}
