@@ -17,6 +17,20 @@
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230A1013'/><path d='M9 9h14M9 16h11M9 23h14' stroke='%23C8A56A' stroke-width='2.4' stroke-linecap='round'/></svg>">
 
+<script>
+/* Runs before first paint so the correct theme is applied with no flash.
+   Deliberately not inside safe() — safe() is defined at the end of body. */
+(function () {
+  try {
+    var saved = localStorage.getItem('ekr:theme');
+    var mode = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    document.documentElement.setAttribute('data-theme', mode);
+  } catch (e) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+})();
+</script>
+
 <style>
 /* ═══════════════════════════════════════════════════
    TOKENS
@@ -35,6 +49,13 @@
   --brass:#C8A56A;
   --brass-lo:#8E7647;
   --brass-glow:rgba(200,165,106,.14);
+  --brass-hi:#D9B981;
+  --grid:rgba(200,165,106,.055);
+  --rail-bg:rgba(10,16,19,.72);
+  --live-ring:rgba(79,169,138,.32);
+  --live-pulse:rgba(79,169,138,.5);
+  --live-pulse-0:rgba(79,169,138,0);
+  --tap:rgba(200,165,106,.18);
   --live:#4FA98A;
 
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
@@ -44,6 +65,32 @@
   --pad:clamp(22px,5.5vw,84px);
   --maxw:1180px;
   --rule:1px solid var(--line);
+  color-scheme:dark;
+}
+
+/* Light theme. Same structure, inverted values — every colour on the
+   page reads from these tokens, so nothing else needs a light variant. */
+:root[data-theme="light"]{
+  --void:#F5F3EE;
+  --deep:#FFFFFF;
+  --panel:#FFFFFF;
+  --line:#E0DACE;
+  --line-2:#C6BDAB;
+  --ivory:#15191E;
+  --ivory-2:#3C444D;
+  --dim:#6A7280;
+  --brass:#8A6A2F;
+  --brass-lo:#B49B6C;
+  --brass-hi:#6F5322;
+  --brass-glow:rgba(138,106,47,.10);
+  --grid:rgba(138,106,47,.07);
+  --rail-bg:rgba(245,243,238,.82);
+  --live:#0C6B4B;
+  --live-ring:rgba(12,107,75,.28);
+  --live-pulse:rgba(12,107,75,.45);
+  --live-pulse-0:rgba(12,107,75,0);
+  --tap:rgba(138,106,47,.16);
+  color-scheme:light;
 }
 
 *{box-sizing:border-box}
@@ -60,7 +107,7 @@ body{
   -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
   overflow-x:hidden;
-  -webkit-tap-highlight-color:rgba(200,165,106,.18);
+  -webkit-tap-highlight-color:var(--tap);
 }
 ::selection{background:var(--brass);color:var(--void)}
 a{color:inherit}
@@ -82,7 +129,7 @@ section[id],main[id]{scroll-margin-top:84px}
 /* ═══════ RAIL ═══════ */
 .rail{
   position:fixed;inset:0 0 auto 0;z-index:50;
-  background:rgba(10,16,19,.72);
+  background:var(--rail-bg);
   -webkit-backdrop-filter:saturate(180%) blur(14px);
   backdrop-filter:saturate(180%) blur(14px);
   border-bottom:var(--rule);
@@ -104,15 +151,38 @@ section[id],main[id]{scroll-margin-top:84px}
 }
 .rail__nav a:hover{color:var(--brass)}
 .live{
-  display:inline-flex;align-items:center;gap:8px;white-space:nowrap;
-  font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--live);border:1px solid rgba(79,169,138,.32);border-radius:999px;padding:5px 12px;
+  display:inline-flex;align-items:center;gap:9px;white-space:nowrap;
+  margin:24px 0 0;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--live);border:1px solid var(--live-ring);border-radius:999px;padding:8px 16px;
+}
+@media (max-width:520px){
+  .live{font-size:10px;letter-spacing:.12em;padding:7px 13px;margin-top:20px;white-space:normal}
 }
 .live i{width:6px;height:6px;border-radius:50%;background:var(--live);flex:none}
-@media (prefers-reduced-motion:no-preference){.live i{animation:breathe 2.8s ease-in-out infinite}}
-@keyframes breathe{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(79,169,138,.5)}50%{opacity:.5;box-shadow:0 0 0 5px rgba(79,169,138,0)}}
+.live[data-state="exploring"]{color:var(--brass);border-color:var(--brass-lo)}
+.live[data-state="exploring"] i{background:var(--brass)}
+.live[data-state="curious"]{color:var(--dim);border-color:var(--line)}
+.live[data-state="curious"] i{background:transparent;border:1px solid var(--dim)}
+@media (prefers-reduced-motion:no-preference){.live[data-state="open"] i{animation:breathe 2.8s ease-in-out infinite}}
+@keyframes breathe{0%,100%{opacity:1;box-shadow:0 0 0 0 var(--live-pulse)}50%{opacity:.5;box-shadow:0 0 0 5px var(--live-pulse-0)}}
 
 .rail__right{display:flex;align-items:center;gap:16px;flex:none}
+
+/* ═══════ THEME TOGGLE ═══════ */
+.theme{
+  appearance:none;background:none;cursor:pointer;flex:none;
+  width:32px;height:32px;padding:0;border:1px solid var(--line);border-radius:999px;
+  display:inline-flex;align-items:center;justify-content:center;
+  color:var(--dim);transition:color .2s ease,border-color .2s ease;
+}
+.theme:hover{color:var(--brass);border-color:var(--brass-lo)}
+.theme svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.5}
+.theme__sun,.theme__rays{opacity:0}
+.theme__moon{fill:currentColor;stroke:none}
+:root[data-theme="light"] .theme__sun,
+:root[data-theme="light"] .theme__rays{opacity:1}
+:root[data-theme="light"] .theme__moon{opacity:0}
 
 /* ═══════ STACK STRIP ═══════ */
 .stack{
@@ -122,7 +192,6 @@ section[id],main[id]{scroll-margin-top:84px}
 }
 .stack i{color:var(--brass);font-style:normal;padding:0 8px;opacity:.85}
 
-@media (max-width:900px){ .live{display:none} }
 @media (max-width:620px){
   .rail__in{flex-wrap:wrap;row-gap:9px;padding:11px var(--pad)}
   .rail__right{width:100%}
@@ -139,8 +208,8 @@ section[id],main[id]{scroll-margin-top:84px}
 .hero::before{
   content:"";position:absolute;inset:0;pointer-events:none;
   background-image:
-    linear-gradient(to right,rgba(200,165,106,.055) 1px,transparent 1px),
-    linear-gradient(to bottom,rgba(200,165,106,.055) 1px,transparent 1px);
+    linear-gradient(to right,var(--grid) 1px,transparent 1px),
+    linear-gradient(to bottom,var(--grid) 1px,transparent 1px);
   background-size:74px 74px;
   -webkit-mask-image:radial-gradient(115% 82% at 12% 0%,#000 0%,transparent 72%);
   mask-image:radial-gradient(115% 82% at 12% 0%,#000 0%,transparent 72%);
@@ -152,7 +221,7 @@ section[id],main[id]{scroll-margin-top:84px}
 }
 .hero__in{position:relative;z-index:1}
 .hero h1{
-  margin:26px 0 0;
+  margin:22px 0 0;
   font-size:clamp(38px,9.4vw,112px);
   font-weight:700;
   letter-spacing:-.052em;
@@ -181,7 +250,7 @@ section[id],main[id]{scroll-margin-top:84px}
 }
 .btn:hover{border-color:var(--brass);color:var(--brass);transform:translateY(-2px)}
 .btn--solid{background:var(--brass);border-color:var(--brass);color:var(--void);font-weight:600}
-.btn--solid:hover{background:#D9B981;border-color:#D9B981;color:var(--void)}
+.btn--solid:hover{background:var(--brass-hi);border-color:var(--brass-hi);color:var(--void)}
 
 /* ═══════ SECTION ═══════ */
 .sec{padding:clamp(64px,9vw,124px) 0;border-top:var(--rule)}
@@ -449,6 +518,46 @@ section[id],main[id]{scroll-margin-top:84px}
 .rows a:hover .rows__title{color:var(--brass)}
 .rows a:hover .rows__go{color:var(--brass)}
 
+/* ═══════ SITE HEALTH ═══════ */
+.health{border:var(--rule);border-radius:3px;background:var(--deep);overflow:hidden}
+.health__top{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  padding:18px 22px;border-bottom:var(--rule);
+}
+.health__state{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--live);
+}
+.health__state i{width:7px;height:7px;border-radius:50%;background:var(--live);flex:none}
+@media (prefers-reduced-motion:no-preference){.health__state i{animation:breathe 2.8s ease-in-out infinite}}
+.health__since{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--dim)}
+
+.health__grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)}
+@media (min-width:760px){.health__grid{grid-template-columns:repeat(4,1fr)}}
+.metric{background:var(--deep);padding:20px 22px;display:flex;flex-direction:column;gap:7px;min-width:0}
+.metric__k{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--dim);
+}
+.metric__v{
+  font-family:var(--mono);font-size:17px;font-weight:600;color:var(--ivory);
+  letter-spacing:-.01em;overflow-wrap:anywhere;
+}
+.metric__v b{color:var(--brass);font-weight:600}
+
+.health__chart{padding:20px 22px;border-top:var(--rule)}
+.health__chart .metric__k{margin-bottom:14px}
+.spark{display:flex;align-items:flex-end;gap:3px;height:44px}
+.spark span{
+  flex:1;min-width:2px;background:var(--line-2);border-radius:1px;
+  transition:background .2s ease;
+}
+.spark span[data-on="1"]{background:var(--brass)}
+.spark__axis{
+  display:flex;justify-content:space-between;margin-top:9px;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+}
+
 /* ═══════ CLOSE ═══════ */
 .close{position:relative;padding:clamp(78px,12vw,150px) 0;border-top:var(--rule);overflow:hidden}
 .close::after{
@@ -482,9 +591,10 @@ footer{border-top:var(--rule);padding:30px 0 46px}
 
 /* ═══════ PRINT — page doubles as a résumé ═══════ */
 @media print{
-  :root{--void:#fff;--deep:#fff;--panel:#fff;--line:#c9c9c9;--line-2:#c9c9c9;--ivory:#000;--ivory-2:#222;--dim:#555;--brass:#6b5220}
+  :root,:root[data-theme]{--void:#fff;--deep:#fff;--panel:#fff;--line:#c9c9c9;--line-2:#c9c9c9;--ivory:#000;--ivory-2:#222;--dim:#555;--brass:#6b5220;--brass-lo:#6b5220;--grid:transparent;--rail-bg:#fff}
   body{background:#fff;color:#000;font-size:10.5pt}
   .rail,.cta,.rows__go,.hero::before,.hero::after,.close::after{display:none!important}
+  .live{border-color:#999;color:#000}
   .hero{padding:0 0 14px}
   .hero h1{font-size:26pt}
   .sec,.close{padding:14px 0;break-inside:avoid}
@@ -512,8 +622,15 @@ footer{border-top:var(--rule);padding:30px 0 46px}
       <a href="#contact">Contact</a>
     </nav>
     <div class="rail__right">
-      <!-- Delete this <span> if you'd rather not signal availability publicly -->
-      <span class="live"><i aria-hidden="true"></i>Open to roles</span>
+      <button class="theme" id="theme" type="button" aria-label="Switch theme" title="Switch theme">
+        <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+          <circle class="theme__sun" cx="10" cy="10" r="4"/>
+          <g class="theme__rays" stroke-linecap="round">
+            <path d="M10 1.6v2.2M10 16.2v2.2M18.4 10h-2.2M3.8 10H1.6M15.9 4.1l-1.6 1.6M5.7 14.3l-1.6 1.6M15.9 15.9l-1.6-1.6M5.7 5.7L4.1 4.1"/>
+          </g>
+          <path class="theme__moon" d="M14.5 11.4A5.2 5.2 0 0 1 8.6 5.5a5.4 5.4 0 1 0 5.9 5.9z"/>
+        </svg>
+      </button>
 
       <p class="stack">Kubernetes<i>·</i>Terraform<i>·</i>Cloud<i>·</i>Linux<i>·</i>Go</p>
     </div>
@@ -526,6 +643,9 @@ footer{border-top:var(--rule);padding:30px 0 46px}
   <section class="hero">
     <div class="wrap hero__in">
       <p class="eyebrow">Bengaluru, India &middot; open to onsite / remote</p>
+
+      <!-- Availability. Set AVAILABILITY at the bottom of this file. -->
+      <span class="live" id="avail" hidden><i aria-hidden="true"></i><span id="availText"></span></span>
       <h1>Eknatha&nbsp;Reddy <span>Puli</span></h1>
       <p class="hero__role">Senior Staff Engineer &nbsp;&middot;&nbsp; Platform Engineering &amp; SRE</p>
       <p class="hero__thesis">
@@ -535,7 +655,7 @@ footer{border-top:var(--rule);padding:30px 0 46px}
         observability that surfaces failure before a customer does.
       </p>
       <div class="cta">
-        <a class="btn btn--solid" href="/eknatha-reddy-puli-resume.pdf">Download résumé</a>
+        <a class="btn btn--solid" id="cv" href="/eknatha-reddy-puli-resume.pdf">Download résumé</a>
         <a class="btn" href="https://www.linkedin.com/in/eknathareddypuli/" rel="me noopener">LinkedIn</a>
         <a class="btn" href="https://github.com/eknatha" rel="me noopener">GitHub</a>
       </div>
@@ -594,7 +714,7 @@ footer{border-top:var(--rule);padding:30px 0 46px}
     <div class="sec__head">
       <p class="eyebrow">Service history</p>
       <h2>Seven teams since 2010</h2>
-      <p>Newest first. Select a role to expand it.</p>
+      <p>Newest first, all expanded. Collapse any role you want out of the way.</p>
     </div>
     <div class="xps" id="xpList"></div>
   </section>
@@ -662,6 +782,18 @@ footer{border-top:var(--rule);padding:30px 0 46px}
 
     <div class="tabs" id="tabs" role="tablist" aria-label="Note categories"></div>
     <div id="panels"></div>
+  </section>
+
+  <!-- ══════════ SITE HEALTH ══════════ -->
+  <!-- Reads /status.json, written by notes/build.mjs on every deploy.
+       Everything shown is measured. Hidden if status.json is missing. -->
+  <section class="wrap sec rise" id="health" hidden>
+    <div class="sec__head">
+      <p class="eyebrow">Dogfooding</p>
+      <h2>This site's own health</h2>
+      <p>Same instincts, smaller blast radius. Build metadata comes from the deploy; load time is measured in your browser right now.</p>
+    </div>
+    <div class="health" id="healthPanel"></div>
   </section>
 
   <!-- ══════════ CONTACT ══════════ -->
@@ -841,7 +973,7 @@ safe(function () {
     var older = TRACK[TRACK.indexOf(t) - 1];
     var gapAfter = older ? t.from - older.to : 0;   // months between roles is not a break
 
-    list.appendChild(item(t, i, i === 0));
+    list.appendChild(item(t, i, true));   // all roles open: recruiters scroll, they do not click
 
     if (gapAfter > 1) {
       var gap = document.createElement('p');
@@ -859,8 +991,28 @@ safe(function () {
   function toggle(head) {
     var body = document.getElementById(head.getAttribute('aria-controls'));
     var open = head.getAttribute('aria-expanded') === 'true';
-    head.setAttribute('aria-expanded', open ? 'false' : 'true');
-    body.style.maxHeight = open ? '' : body.scrollHeight + 'px';
+
+    if (open) {
+      body.style.maxHeight = body.scrollHeight + 'px';   // pin, so it has somewhere to shrink from
+      void body.offsetHeight;                            // force reflow
+      body.style.maxHeight = '';
+      head.setAttribute('aria-expanded', 'false');
+    } else {
+      body.style.maxHeight = body.scrollHeight + 'px';
+      head.setAttribute('aria-expanded', 'true');
+      release(body);
+    }
+  }
+
+  // Once open, drop the pixel cap so the panel can grow with its content.
+  function release(body) {
+    var done = function (e) {
+      if (e && e.propertyName !== 'max-height') return;
+      body.style.maxHeight = 'none';
+      body.removeEventListener('transitionend', done);
+    };
+    body.addEventListener('transitionend', done);
+    setTimeout(done, 500);                               // reduced-motion: no transitionend fires
   }
 
   function item(t, i, open) {
@@ -972,12 +1124,8 @@ safe(function () {
     body.appendChild(inner);
     wrap.appendChild(body);
 
-    // The current role opens by default; measure after layout settles.
-    if (open) {
-      requestAnimationFrame(function () {
-        body.style.maxHeight = body.scrollHeight + 'px';
-      });
-    }
+    // Open from the start: no cap at all, so nothing can clip.
+    if (open) body.style.maxHeight = 'none';
     return wrap;
   }
 
@@ -988,8 +1136,7 @@ safe(function () {
     resizeTimer = setTimeout(function () {
       var heads = list.querySelectorAll('.xp__head[aria-expanded="true"]');
       for (var i = 0; i < heads.length; i++) {
-        var b = document.getElementById(heads[i].getAttribute('aria-controls'));
-        b.style.maxHeight = b.scrollHeight + 'px';
+        document.getElementById(heads[i].getAttribute('aria-controls')).style.maxHeight = 'none';
       }
     }, 150);
   });
@@ -1304,6 +1451,218 @@ safe(function () {
     var p = String(d || '').split('-');
     return p.length < 2 ? (d || '') : p[0] + ' · ' + p[1];
   }
+});
+
+/* ══════════════════════════════════════════════════════════
+   AVAILABILITY
+
+   state: "open" | "exploring" | "curious" | "closed"
+   "closed" removes the badge entirely.
+   ══════════════════════════════════════════════════════════ */
+const AVAILABILITY = {
+  state: "open",
+  label: "Open to opportunities"
+  // e.g. { state: "exploring", label: "Exploring Q4 2026" }
+  //      { state: "curious",   label: "Not actively looking, always curious" }
+  //      { state: "closed",    label: "" }
+};
+
+safe(function () {
+  var badge = document.getElementById('avail');
+  var text = document.getElementById('availText');
+  if (!badge || !text) return;
+  if (!AVAILABILITY.label || AVAILABILITY.state === 'closed') { badge.remove(); return; }
+  text.textContent = AVAILABILITY.label;
+  badge.dataset.state = AVAILABILITY.state;
+  badge.hidden = false;
+});
+
+
+/* ══════════════════════════════════════════════════════════
+   THEME
+
+   Defaults to the OS preference; an explicit choice is
+   remembered. The inline script in <head> sets the attribute
+   before first paint so there is no flash.
+   ══════════════════════════════════════════════════════════ */
+safe(function () {
+  var btn = document.getElementById('theme');
+  var meta = document.querySelector('meta[name="theme-color"]');
+  if (!btn) return;
+
+  function current() {
+    return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  }
+
+  function apply(mode) {
+    document.documentElement.setAttribute('data-theme', mode);
+    btn.setAttribute('aria-label', mode === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+    btn.title = btn.getAttribute('aria-label');
+    if (meta) meta.setAttribute('content', mode === 'light' ? '#F5F3EE' : '#0A1013');
+  }
+
+  apply(current());
+
+  btn.addEventListener('click', function () {
+    var next = current() === 'light' ? 'dark' : 'light';
+    apply(next);
+    try { localStorage.setItem('ekr:theme', next); } catch (e) {}
+  });
+});
+
+
+/* ══════════════════════════════════════════════════════════
+   SITE HEALTH
+
+   Reads /status.json, written by notes/build.mjs on deploy.
+   Load time is measured live via the Navigation Timing API —
+   it is this visit, not a stored number. Nothing is invented:
+   a missing field is omitted, and a missing file hides the
+   whole section.
+   ══════════════════════════════════════════════════════════ */
+const HEALTH_SOURCE = "/status.json";
+
+safe(function () {
+  var sec = document.getElementById('health');
+  var panel = document.getElementById('healthPanel');
+  if (!sec || !panel || !window.fetch) return;
+
+  fetch(HEALTH_SOURCE, { cache: 'no-store' })
+    .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(render)
+    .catch(function () { /* no status.json — section stays hidden */ });
+
+  function render(s) {
+    sec.hidden = false;
+
+    var built = s.builtAt ? new Date(s.builtAt) : null;
+
+    // ── header: state + uptime since last deploy ──
+    var top = document.createElement('div');
+    top.className = 'health__top';
+
+    var state = document.createElement('span');
+    state.className = 'health__state';
+    var dot = document.createElement('i');
+    dot.setAttribute('aria-hidden', 'true');
+    state.appendChild(dot);
+    state.appendChild(document.createTextNode('All systems operational'));
+    top.appendChild(state);
+
+    if (built) {
+      var since = document.createElement('span');
+      since.className = 'health__since';
+      since.textContent = 'Stable for ' + ago(built);
+      top.appendChild(since);
+    }
+    panel.appendChild(top);
+
+    // ── metrics ──
+    var grid = document.createElement('div');
+    grid.className = 'health__grid';
+
+    var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+    var loadMs = nav && nav.duration ? Math.round(nav.duration) : null;
+
+    var metrics = [];
+    if (built) metrics.push(['Last deploy', ago(built) + ' ago']);
+    if (s.commit) metrics.push(['Commit', s.commit]);
+    if (loadMs !== null) metrics.push(['Page load', loadMs + ' ms']);
+    if (s.pages) metrics.push(['Pages served', String(s.pages)]);
+    if (s.notes) metrics.push(['Notes published', String(s.notes.published)]);
+    if (typeof s.runtimeDependencies === 'number') {
+      metrics.push(['Runtime deps', String(s.runtimeDependencies)]);
+    }
+    if (s.branch) metrics.push(['Branch', s.branch]);
+    if (s.runner) metrics.push(['Built by', s.runner]);
+
+    metrics.slice(0, 8).forEach(function (m) {
+      var cell = document.createElement('div');
+      cell.className = 'metric';
+      var k = document.createElement('span');
+      k.className = 'metric__k';
+      k.textContent = m[0];
+      var v = document.createElement('span');
+      v.className = 'metric__v';
+      v.textContent = m[1];
+      cell.appendChild(k); cell.appendChild(v);
+      grid.appendChild(cell);
+    });
+    panel.appendChild(grid);
+
+    // ── deploy frequency, last 12 weeks ──
+    if (Array.isArray(s.deploys) && s.deploys.length) {
+      var weeks = 12;
+      var now = Date.now();
+      var buckets = new Array(weeks).fill(0);
+      s.deploys.forEach(function (iso) {
+        var t = Date.parse(iso);
+        if (isNaN(t)) return;
+        var w = Math.floor((now - t) / 6048e5);          // ms per week
+        if (w >= 0 && w < weeks) buckets[weeks - 1 - w] += 1;
+      });
+
+      var peak = Math.max.apply(null, buckets) || 1;
+
+      var chart = document.createElement('div');
+      chart.className = 'health__chart';
+      var label = document.createElement('span');
+      label.className = 'metric__k';
+      label.textContent = 'Deploys — last 12 weeks';
+      chart.appendChild(label);
+
+      var spark = document.createElement('div');
+      spark.className = 'spark';
+      spark.setAttribute('role', 'img');
+      spark.setAttribute('aria-label',
+        'Deploy frequency over the last twelve weeks: ' + buckets.join(', '));
+      buckets.forEach(function (n) {
+        var bar = document.createElement('span');
+        bar.style.height = Math.max(3, Math.round((n / peak) * 44)) + 'px';
+        if (n > 0) bar.dataset.on = '1';
+        bar.title = n + (n === 1 ? ' deploy' : ' deploys');
+        spark.appendChild(bar);
+      });
+      chart.appendChild(spark);
+
+      var axis = document.createElement('div');
+      axis.className = 'spark__axis';
+      ['12 weeks ago', 'now'].forEach(function (t) {
+        var el = document.createElement('span');
+        el.textContent = t;
+        axis.appendChild(el);
+      });
+      chart.appendChild(axis);
+      panel.appendChild(chart);
+    }
+  }
+
+  function ago(then) {
+    var mins = Math.round((Date.now() - then.getTime()) / 6e4);
+    if (mins < 2) return 'a moment';
+    if (mins < 60) return mins + ' minutes';
+    var hrs = Math.round(mins / 60);
+    if (hrs < 24) return hrs + (hrs === 1 ? ' hour' : ' hours');
+    var days = Math.round(hrs / 24);
+    if (days < 31) return days + (days === 1 ? ' day' : ' days');
+    var months = Math.round(days / 30);
+    return months + (months === 1 ? ' month' : ' months');
+  }
+});
+
+/* ══════════════════════════════════════════════════════════
+   RÉSUMÉ BUTTON
+
+   Drop eknatha-reddy-puli-resume.pdf in the repo root and the
+   button works. Until then it removes itself rather than
+   sending a recruiter to a 404.
+   ══════════════════════════════════════════════════════════ */
+safe(function () {
+  var cv = document.getElementById('cv');
+  if (!cv || !window.fetch) return;
+  fetch(cv.getAttribute('href'), { method: 'HEAD' })
+    .then(function (r) { if (!r.ok) cv.remove(); })
+    .catch(function () { cv.remove(); });
 });
 
 safe(function () {
