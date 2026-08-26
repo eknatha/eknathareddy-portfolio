@@ -116,6 +116,17 @@ One or two paragraphs. What changed your mind, or what you'd tell a colleague ov
 Where you think this goes, and what would make you wrong.
 `;
 
+SKELETONS['til'] = `One paragraph. What you expected, what actually happened, and the thing
+you now know. No preamble, no "in this post" — a TIL that needs a
+introduction is a troubleshooting note.
+
+\`\`\`bash
+# the command, flag or config that carries it
+\`\`\`
+
+If it took you an hour to find, say where you found it.
+`;
+
 const [type, ...rest] = process.argv.slice(2);
 const title = rest.join(' ').trim();
 

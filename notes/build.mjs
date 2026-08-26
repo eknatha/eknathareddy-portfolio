@@ -123,6 +123,29 @@ const payload = {
 
 writeFileSync(join(HERE, 'index.json'), JSON.stringify(payload, null, 2) + '\n');
 
+// ── inline the payload into index.html ───────────────────────────────
+// The homepage reads this block directly, so the notes section renders
+// with no network request — it works before deploy, offline, over
+// file://, and for crawlers that don't run fetch.
+const INDEX = join(ROOT, 'index.html');
+const OPEN = '<script type="application/json" id="notesData">';
+const CLOSE = '</' + 'script>';
+try {
+  const page = readFileSync(INDEX, 'utf8');
+  const start = page.indexOf(OPEN);
+  if (start === -1) {
+    console.warn('! index.html has no #notesData block — homepage will fall back to fetch');
+  } else {
+    const from = start + OPEN.length;
+    const to = page.indexOf(CLOSE, from);
+    const inlined = JSON.stringify(payload).replace(/</g, '\\u003c');
+    writeFileSync(INDEX, page.slice(0, from) + inlined + page.slice(to));
+    console.log('· index.html updated with the notes payload');
+  }
+} catch (err) {
+  console.warn('! could not inline notes into index.html:', err.message);
+}
+
 // ── status.json — what the health panel reads ────────────────────────
 // Everything here is measured, not asserted. If git isn't available the
 // field is omitted rather than guessed at.
