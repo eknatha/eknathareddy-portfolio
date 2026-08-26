@@ -969,37 +969,52 @@ const TRACK = [
     org: "Genisys Information Systems", abbr: "GENISYS", from: 2010, to: 2010,
     dates: "Feb 2010 – Nov 2010",
     role: "Junior Business Analyst",
-    summary: "Requirements gathering and reporting alongside the delivery team.",
-    highlights: [],
-    stack: ["SQL", "Reporting"]
+    summary: "Requirements gathering and reporting alongside the delivery team for Lead Generation's.",
+    highlights: [
+       "Managed KPO-driven lead generation initiatives targeting enterprise solutions, analyzing market trends to identify high-value opportunities for SAP, IBM, and storage solutions."
+       "Gathered and documented business requirements from enterprise stakeholders, translating complex client data into actionable insights and strategic outreach plans."
+       "Partnered with cross-functional teams to analyze campaign performance metrics, optimize data pipelines, and improve targeted business-to-business (B2B) lead conversion rates."
+    ],
+    stack: ["SQL", "Reporting", "Microsoft Excel"]
   },
   {
     org: "RCS Technologies", abbr: "RCS", from: 2010, to: 2011,
     dates: "Nov 2010 – Aug 2011",
     role: "System Administrator Trainee",
     summary: "First exposure to systems administration — servers, user management and day-to-day support.",
-    highlights: [],
-    stack: ["Windows Server", "Linux", "Hardware"]
+    highlights: [
+       "Managed end-to-end Linux and Solaris server installations, configuration, and proactive lifecycle maintenance."
+       "Analyzed complex customer infrastructure requirements to design and propose secure, optimized deployment architectures."
+    ],
+    stack: ["Solaris", "Veritas", "Windows Server", "Linux", "Hardware"]
   },
   {
     org: "Ericsson", abbr: "ERI", from: 2011, to: 2017,
-    role: "Systems Engineer",
+    role: "Senior Customer Support Engineer",
     location: "India",
     summary: "Telecom infrastructure and Linux systems operations for carrier networks.",
-    highlights: [],
-    stack: ["Linux", "Networking", "Shell"]
+    highlights: [
+       "Administered high-availability OSS-RC systems, databases, and DWH platforms on Solaris and RHEL, maintaining 99.95% telecom infrastructure uptime through secure upgrades and patch management."
+       "Served on the 24x7 Emergency Recovery Team executing robust DR protocols, critical P1 incident response, and emergency security patching under strict SLA timelines."
+       "Automated data pipelines and deployment configurations using Shell scripting to eliminate manual vulnerabilities and save 15 hours of operational effort per week."
+    ],
+    stack: ["Linux", "Networking", "Shell", "HA Cluster", "Storage", "Database", "Solaris"]
   },
   {
     org: "Subex", abbr: "SUBEX", from: 2017, to: 2019,
-    role: "Production Support Engineer",
+    role: "Lead - Cloud & Infrstructure",
     location: "Bengaluru",
     summary: "Production support and automation across carrier-scale analytics platforms.",
-    highlights: [],
-    stack: ["Linux", "Oracle", "Shell", "Python"]
+    highlights: [
+       "Managed large-scale multi-cloud migrations (AWS, Azure, GCP, OpenStack, Hadoop) with zero data loss, while implementing robust DR plans to meet strict RPO/RTO targets."
+       "Led cross-functional initiatives to harden security architecture through advanced network segmentation, IAM policies, and encryption standards across all platforms."
+       "Maintained multi-cloud stability and platform integrity through comprehensive infrastructure monitoring, capacity planning, and automated scaling policies."
+    ],
+    stack: ["Linux", "AWS", "Azure", "Openstack", "Monitoring", "Solaris", "Shell", "Python"]
   },
   {
     org: "AT&T · Xandr · Microsoft", abbr: "AT&T", from: 2019, to: 2022,
-    role: "Site Reliability Engineer",
+    role: "Technical Specialist",
     location: "Bengaluru",
     summary: "Ad-tech platform operations at scale — Linux fleet, monitoring and incident response. One team, three parent companies.",
     arc: [
@@ -1007,18 +1022,24 @@ const TRACK = [
       "AT&T spun its advertising business into Xandr",
       "Xandr acquired by Microsoft"
     ],
-    highlights: [],
-    stack: ["Linux", "Monitoring", "Incident response", "Python"]
+    highlights: [
+       "Orchestrated zero-downtime Kubernetes (Baremetal/EKS/AKS) migrations and scaled high-availability AWS/Azure infrastructure for mission-critical, secure ad-tech microservices."
+       "Administered PostgreSQL/MySQL databases with automated backup, replication topologies, and secure access controls to ensure data integrity and 99.95% uptime."
+       "Optimized cloud resource utilization and implemented secure infrastructure automation scripts to significantly reduce operational overhead and cloud costs."
+    ],
+    stack: ["Linux", "Kubernetes", "Database", "Azure", "KVM", "Monitoring", "Incident response", "Python"]
   },
   {
     org: "Sterlite Technologies", abbr: "STL", from: 2022, to: 2023,
-    role: "Cloud Infrastructure Engineer",
+    role: "Senior Tech Lead - Hydrid Cloud & Kubernetes",
     location: "Bengaluru",
     summary: "OpenStack and Kubernetes private cloud, with Terraform provisioning pipelines.",
     highlights: [
-      "Cut provisioning time roughly 60% by replacing manual builds with Terraform modules."
+      "Managed carrier-grade Kubernetes and Nokia Container Services (NCS) platforms, implementing robust RBAC security policies, CNI networking, and CSI storage."
+      "Automated multi-cloud provisioning using Terraform to accelerate spin-up times by 50% while reducing manual configuration errors and security gaps."
+      "Deployed Prometheus/Grafana observability stacks and established secure Helm release standards while mentoring junior engineers on container security best practices."
     ],
-    stack: ["OpenStack", "Kubernetes", "Terraform", "Ansible", "Linux"]
+    stack: ["OpenStack", "Kubernetes", "Terraform", "Ansible", "Linux", "Security", "RBAC"]
   },
   {
     org: "IBM", abbr: "IBM", from: 2023, to: 2026, current: true,
@@ -1026,8 +1047,12 @@ const TRACK = [
     focus: "Platform Engineering · Cloud Infrastructure · SRE",
     location: "Bengaluru",
     summary: "Building and operating production infrastructure across Linux, Kubernetes, OpenStack and cloud platforms, with a focus on automation, reliability and platform engineering.",
-    highlights: [],
-    stack: ["Kubernetes", "Terraform", "AWS", "Azure", "Python", "Linux"]
+    highlights: [
+       "Led OpenStack and Kubernetes platform engineering using Terraform and Go to automate secure IaC pipelines, cutting provisioning times by 50% with a 99.9%+ SLA."
+       "Collaborated across infrastructure and database teams to enforce security hardening standards, optimize deployment efficiency, and ensure data integrity."
+       "Resolved critical P1/P2 production incidents and established automated remediation runbooks while mentoring engineers on operational security best practices."
+    ],
+    stack: ["Kubernetes", "Terraform", "AWS", "Azure", "Openstack" "Python", "Linux", "RBAC"]
   }
 ];
 
