@@ -1,0 +1,47 @@
+{
+  "heading": "Troubleshooting, TILs, case studies & postmortems",
+  "blurb": "Written up as they happen. Troubleshooting is the specific fix; TILs are the small things picked up day to day; case studies and postmortems are the long form.",
+  "hideUntilPublished": false,
+  "tabs": [
+    {
+      "id": "troubleshooting",
+      "type": "troubleshooting",
+      "label": "Troubleshooting",
+      "kicker": "Troubleshooting",
+      "intro": "Specific failures and the path to the actual cause — including the wrong turns. Written up whenever something takes more than an hour to work out.",
+      "empty": "No troubleshooting notes published yet."
+    },
+    {
+      "id": "til",
+      "type": "til",
+      "label": "TIL",
+      "kicker": "TIL",
+      "intro": "Today I Learned. Small things picked up day to day — a flag, a default, a behaviour that surprised me. One paragraph is a complete post.",
+      "empty": "No TILs published yet."
+    },
+    {
+      "id": "case-studies",
+      "type": "case-study",
+      "label": "Case studies",
+      "kicker": "Case study",
+      "intro": "Problem, the constraints I didn't choose, what I did, what it cost, and what I'd reverse today.",
+      "empty": "No case studies published yet."
+    },
+    {
+      "id": "postmortems",
+      "type": "postmortem",
+      "label": "Postmortems",
+      "kicker": "Postmortem",
+      "intro": "Blameless. Timeline, contributing factors, what changed afterwards. Employers anonymised.",
+      "empty": "No postmortems published yet."
+    },
+    {
+      "id": "blog",
+      "type": "blog",
+      "label": "Blog",
+      "kicker": "Blog",
+      "intro": "Shorter pieces — things I've been reading, tools I've tried, opinions I'm still testing.",
+      "empty": "No blog posts published yet."
+    }
+  ]
+}

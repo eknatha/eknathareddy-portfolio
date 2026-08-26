@@ -48,18 +48,31 @@ git push -u origin main
 
 Verify the apex first at **profile → Settings → Pages → Verified domains**. Skip this and GitHub rejects the apex domain.
 
-## 3. DNS
+## 3. DNS on Cloudflare
 
-Four **A** records on the apex `eknathareddy.com`:
+Cloudflare works fine with GitHub Pages, but two of its defaults will break the site if you leave them alone. Both are called out below.
 
-```
-185.199.108.153
-185.199.109.153
-185.199.110.153
-185.199.111.153
-```
+### 3.1 Zone active
 
-Four **AAAA** records (optional, IPv6):
+`Overview` should show the zone as **Active**. If it says *Pending nameserver update*, change the nameservers at your registrar to the two Cloudflare gave you. Nothing below works until this is done — allow a few hours.
+
+### 3.2 Delete what Cloudflare created
+
+Cloudflare imports or invents records when a zone is added. Remove any A, AAAA or CNAME on `@` or `www` that isn't in the table below, and remove parking records. No wildcards.
+
+### 3.3 Add the records — **proxy OFF**
+
+Set every one of these to **DNS only** (grey cloud, not orange).
+
+| Type | Name | Content | Proxy |
+|---|---|---|---|
+| A | `@` | `185.199.108.153` | DNS only |
+| A | `@` | `185.199.109.153` | DNS only |
+| A | `@` | `185.199.110.153` | DNS only |
+| A | `@` | `185.199.111.153` | DNS only |
+| CNAME | `www` | `eknatha.github.io` | DNS only |
+
+IPv6 is optional — four AAAA records, also DNS only:
 
 ```
 2606:50c0:8000::153
@@ -68,23 +81,69 @@ Four **AAAA** records (optional, IPv6):
 2606:50c0:8003::153
 ```
 
-One **CNAME**: `www` → `eknatha.github.io`
+**Why the proxy must be off right now:** with the orange cloud on, Cloudflare answers on its own IPs and GitHub can't complete the ACME challenge, so no certificate is ever issued and `Enforce HTTPS` stays greyed out. Turn the proxy on later if you want it — step 3.6.
 
-Delete the registrar's parking/default A record. No wildcard records.
+### 3.4 Verify the domain with GitHub
+
+`github.com → your profile → Settings → Pages → Add a domain`. GitHub gives you a TXT record:
+
+| Type | Name | Content |
+|---|---|---|
+| TXT | `_github-pages-challenge-eknatha` | (the token GitHub shows) |
+
+Add it in Cloudflare, click Verify. Do this **before** setting the custom domain — it stops anyone else claiming the name later.
+
+### 3.5 Point Pages at the domain
+
+`Repo → Settings → Pages → Custom domain` → `eknathareddy.com` → Save.
+
+The `CNAME` file in the repo already contains the domain, so this should populate itself. Then wait for *"Certificate issued"* — usually a few minutes, occasionally an hour — and tick **Enforce HTTPS**.
+
+Check before moving on:
 
 ```bash
-dig eknathareddy.com +noall +answer -t A
-dig www.eknathareddy.com +noall +answer -t CNAME
+dig eknathareddy.com +short          # the four 185.199.x.x
+dig www.eknathareddy.com +short      # eknatha.github.io
+curl -sI https://eknathareddy.com | head -1
 ```
+
+### 3.6 Only after HTTPS works: turning the proxy on
+
+Optional. The orange cloud buys you Cloudflare's CDN and analytics. It also causes the single most common failure with Pages — an infinite redirect loop — if SSL is misconfigured.
+
+If you enable it:
+
+- `SSL/TLS → Overview` must be **Full (strict)**. **Flexible is what causes `ERR_TOO_MANY_REDIRECTS`** — Cloudflare talks HTTP to GitHub, GitHub redirects to HTTPS, round and round.
+- `SSL/TLS → Edge Certificates → Always Use HTTPS`: on.
+- `Speed → Optimization → Rocket Loader`: **off**. It reorders script execution, and this page's JS depends on running in order.
+- Auto Minify (if your dashboard still has it): off. Nothing here needs minifying and it occasionally mangles inline JS.
+
+**Cache rule for the notes index.** Cloudflare will happily cache `notes/index.json` and your new posts won't appear. Add a rule under `Caching → Cache Rules`:
+
+```
+When: URI Path equals /notes/index.json
+Then: Bypass cache
+```
+
+Or purge the cache after each publish. The bypass rule is less to remember.
+
+### 3.7 If something is wrong
+
+| Symptom | Cause |
+|---|---|
+| `ERR_TOO_MANY_REDIRECTS` | SSL/TLS mode is Flexible. Set Full (strict). |
+| Enforce HTTPS greyed out | Proxy is on before the cert was issued. Grey-cloud the records, wait, retry. |
+| GitHub 404 page | Custom domain not set, or Pages source isn't GitHub Actions. |
+| New note doesn't appear | Cloudflare cached `index.json`. Purge, then add the bypass rule. |
+| Domain verification fails | TXT record name must be exactly `_github-pages-challenge-eknatha`. |
 
 ## 4. Before you publish
 
-- **Career years.** `const TRACK = [...]` at the bottom of `index.html` is the only data you maintain. The five year ranges are my guesses — fix them.
-- **Contact is LinkedIn only.** No address appears anywhere — not in the markup, not in the JSON-LD, not behind a `mailto:`. If you later want a lower-friction route, add an alias on your own domain (`hello@eknathareddy.com`) forwarded to your inbox, rather than publishing a personal address.
-- **Résumé PDF.** Drop `eknatha-reddy-puli-resume.pdf` in the repo root — the hero button already points at it.
-- **Availability pill.** `<span class="live">` in the header. Delete it if you don't want IBM colleagues seeing "Open to roles".
-- **GitHub handle.** Hardcoded as `github.com/eknatha`. Swap to `eknathareddyp` if that's the account you want surfaced.
-- **`og.png`.** Referenced for link previews but not included — add a 1200×630 image or delete the `og:image` meta tag.
+- **Résumé PDF.** Add `eknatha-reddy-puli-resume.pdf` to the repo root. Until it exists the Download button removes itself on load rather than sending a recruiter to a 404 — so the page is never broken, just missing a button.
+- **`og.png` is included.** 1200×630, generated to match the site. Link previews in Slack, WhatsApp and LinkedIn will render properly.
+- **Contact is LinkedIn only.** No email anywhere — not in markup, not in JSON-LD, not behind a `mailto:`.
+- **Availability badge is public.** `const AVAILABILITY` — worth a thought while you're still at IBM.
+- **`highlights` are mostly empty.** Six of seven roles. Now that every role is expanded by default, this is visible on first scroll.
 
 ## 5. Design notes
 
@@ -100,51 +159,52 @@ Zero dependencies. No fonts fetched, no analytics, no build step.
 
 ## 6. Service history — adding experience detail
 
-An accordion, newest first. Each role is a horizontal row — dates, title and employer, and a marker — that expands on click. The current role opens by default; several can be open at once.
+**Every role is expanded on load.** Recruiters scroll, they don't click — so company names, dates, titles and summaries are all visible without interaction. Each row is still collapsible if the reader wants something out of the way.
 
-`const TRACK` in `index.html` stays **oldest first** (so breaks in service compute correctly); the page reverses it for display.
+`const TRACK` in `index.html`, oldest first (the page reverses it for display):
 
 ```js
 {
   org: "IBM",                    // required
   abbr: "IBM",                   // required
-  from: 2023, to: 2026,          // required — years
-  current: true,                 // optional — "present" instead of the end year
+  from: 2023, to: 2026,          // required
+  current: true,                 // optional
 
-  dates: "Feb 2010 – Nov 2010",  // optional — exact span, overrides from/to in the row
+  dates: "Nov 2010 – Aug 2011",  // optional — exact span, overrides from/to
   role: "Senior Staff Software Engineer",
   focus: "Platform Engineering · Cloud Infrastructure · SRE",
   location: "Bengaluru",
   summary: "Two or three sentences on the remit.",
-  arc: [                         // optional — org changes during your tenure
-    "Joined AT&T",
-    "AT&T spun its advertising business into Xandr",
-    "Xandr acquired by Microsoft"
-  ],
+  arc: ["Joined AT&T", "…spun into Xandr", "…acquired by Microsoft"],
   highlights: ["Concrete, with a number in it."],
   stack: ["Kubernetes", "Terraform"]
 }
 ```
 
-Only the first four fields are required. Omit anything else and that part is left out — an entry with just a summary still renders cleanly.
+A gap of more than a year between roles renders as a "break in service" row.
 
-A gap of **more than a year** between one role's `to` and the next role's `from` renders as a "break in service" row. A few months between jobs isn't flagged.
+**The `highlights` arrays are still mostly empty.** Now that everything is expanded, that emptiness is visible on first scroll rather than hidden behind a click. Two or three per role: what changed, by how much, measured how.
 
-Printing expands every role and hides the markers.
+## 6a. Availability badge
 
-**The `highlights` arrays are mostly empty on purpose.** They're the strongest thing on the page and they need real numbers from work you did. Two or three per role: what changed, by how much, measured how. The Sterlite entry shows the shape.
+`const AVAILABILITY` near the bottom of `index.html`:
 
-### Toolchain
+```js
+const AVAILABILITY = {
+  state: "open",                  // open | exploring | curious | closed
+  label: "Open to opportunities"
+};
+```
 
-Seven rows in `index.html`, under the "What I run" section. The **Databases** row currently reads MySQL · PostgreSQL · Oracle · Redis — that's a starting set, not a claim I can stand behind. Trim it to what you'd be comfortable being questioned on for twenty minutes.
+Other phrasings, all supported:
 
-### Mobile
+```js
+{ state: "exploring", label: "Exploring Q4 2026" }
+{ state: "curious",   label: "Not actively looking, always curious" }
+{ state: "closed",    label: "" }     // removes the badge entirely
+```
 
-The accordion header is a three-cell grid. On phones it uses named areas — dates and the expand marker on the first line, role and employer on the second — because with three children in a two-column grid the marker was being pushed onto its own row. Fixed.
-
-Also handled: anchored sections clear the fixed rail (`scroll-margin-top`), the header stack strip wraps below 400px, `overflow-x` is clipped so the decorative glows can't cause sideways scroll, tap highlights use the brass tint, and a 520px breakpoint tightens section rhythm, buttons and tabs.
-
-Worth a real-device check before you publish — emulators miss things.
+`closed` deletes the element rather than hiding it. Worth remembering that this is public while you're still at IBM.
 
 ## 6b. Certifications
 
@@ -165,6 +225,29 @@ Status drives the dot: green active, brass in progress, hollow expired.
 
 Two things worth doing before this goes live. Add `url` wherever the issuer gives public verification — Red Hat and Oracle both do, and an unverifiable credential is worth less than a verifiable one. And add `meta` dates to RHCSA, Solaris and Nokia; a certification with no date invites the question of how old it is, and Solaris 10 in particular will read as long-lapsed unless you say otherwise.
 
+## 6c. Terminal
+
+A working shell in the page, between Toolchain and Certifications. Every command reads live from the page's own data — `TRACK`, `CERTS`, `AVAILABILITY`, the toolchain markup, the notes tabs — so it can never drift from what's above it.
+
+| Command | Source |
+|---|---|
+| `whoami` | current role from `TRACK`, years from the spec sheet, availability badge |
+| `history` | all roles, with real date spans |
+| `ps aux` | current role's `stack`, plus what you're learning |
+| `cat skills.txt` | scraped from the toolchain section |
+| `cat certs.txt` | `CERTS` |
+| `uptime` | years and role count |
+| `ping linkedin` / `ping github` | opens the link |
+| `ls`, `notes`, `date`, `help`, `clear`, `sudo`, `exit` | — |
+
+Arrow keys walk history, Tab completes, aliases cover `ps aux`, `man`, `who`, `cls`. Tap chips sit under the terminal because typing on a phone is miserable. Output is written with `textContent`, so a pasted `<img onerror>` renders as text.
+
+Adding a command is one entry in `CMDS`.
+
+**Two deliberate choices.** `uptime` doesn't claim "0 major outages" — that's unverifiable, and an interviewer would rightly ask how you'd know. It says instead that no uptime percentage is shown because nothing measures it, which is a better answer than a number. And `whoami` reads the years figure from your operating-numbers row rather than deriving it from the 2010 start date, which would have said 16 and contradicted the 14+ above it.
+
+The terminal is hidden in print.
+
 ## 7. What's not on the page
 
 The EknathaLabs section is removed, along with the footer link and the `sameAs` entry in the JSON-LD. Nothing on the site references the labs now.
@@ -179,48 +262,109 @@ GitHub Pages serves its own branded 404 otherwise, which breaks the illusion on 
 
 Pages picks it up automatically from the repo root. No configuration.
 
+
+### 7a. Theme
+
+Dark by default, light available, toggled from the button in the header. It follows the OS preference on first visit, and an explicit choice is remembered in `localStorage`. A tiny inline script in `<head>` applies the theme before first paint so there's no flash of the wrong colours.
+
+Every colour on the page reads from a CSS custom property, so the light theme is one token block — `:root[data-theme="light"]` — and nothing else needed a variant.
+
+### 7b. Site health panel
+
+A real dashboard, not a decorative one. `notes/build.mjs` writes `status.json` on every build:
+
+```json
+{
+  "builtAt": "2026-08-25T13:41:05Z",
+  "commit": "a1b2c3d",
+  "branch": "main",
+  "runner": "github-actions",
+  "notes": { "published": 2, "drafts": 1 },
+  "pages": 3,
+  "runtimeDependencies": 0,
+  "deploys": ["2026-08-25T...", "..."]
+}
+```
+
+The panel renders last deploy time, commit, pages served, notes published, runtime dependencies, branch, builder — plus a twelve-week deploy-frequency sparkline built from `git log`.
+
+**Page load time is measured in the visitor's browser** via the Navigation Timing API. It's their actual visit, not a stored figure.
+
+Two deliberate omissions. There's no uptime percentage, because nothing is monitoring the site and a number nobody measured is a lie on a reliability engineer's portfolio. And there's no response-time chart, for the same reason. If you want real uptime, point a free monitor at the domain and add the figure — until then the panel only claims what it can prove.
+
+The workflow checks out with `fetch-depth: 50` so the sparkline has history, and copies `status.json` into the deploy. Missing file, hidden section.
+
+
 ---
 
 ## 8. Notes — the content pipeline
 
-**`index.html` contains no notes content.** Not the entries, not the tab labels, not the section heading, not the intro copy. All of it is generated. The homepage configures exactly one thing:
+**`index.html` contains no notes content.** Categories, labels, copy and every entry are generated. Publishing is: write Markdown, push.
 
-```js
-const NOTES_SOURCE = "/notes/index.json";
-```
-
-### The pipeline
-
-```
-notes/notes.config.json   categories, labels, heading, intro copy
-notes/posts/*.md          the writing
-         ↓  notes/build.mjs — runs in the Action on every push
-notes/index.json          the payload the homepage renders
-notes/<slug>.html         one page per published note
-sitemap.xml               regenerated
-```
-
-### Once, at setup
-
-`Settings → Pages → Source → **GitHub Actions**`. Without it the build never runs.
-
-### Every week
+### Publishing
 
 ```bash
-node notes/new.mjs case-study "Terraform module rewrite"
-# → notes/posts/2026-09-07-terraform-module-rewrite.md, draft:true,
-#   pre-filled with the section skeleton for that format
+node notes/new.mjs troubleshooting "Pods stuck in Terminating"
+node notes/new.mjs til          "kubectl drain ignores DaemonSets"
+node notes/new.mjs case-study   "Terraform module rewrite"
+# also: postmortem, blog
 
-# write it, flip draft:false
-
-git add -A && git commit -m "notes: terraform module rewrite" && git push
+# write it, then set draft:false
+git add -A && git commit -m "notes: pods stuck in terminating" && git push
 ```
 
-Push is publish. About 40 seconds.
+Push is publish. The Action renders the page, rebuilds the index, updates the sitemap and deploys — about 40 seconds. Entries sort newest-first by `date`, and each row shows a full stamp: **26 Aug 2026**.
 
-### Front matter
+### The payload is inlined, not fetched
 
-```yaml
+`build.mjs` writes the whole notes payload into a `<script type="application/json" id="notesData">` block inside `index.html`. The homepage reads that directly.
+
+This matters: the section renders with **no network request**, so it works offline, over `file://`, before deploy, behind a cache, and for crawlers that don't run `fetch`. `notes/index.json` is still written and still served as a fallback, but nothing depends on it.
+
+If you ever see empty categories on the live site, the cause is a stale deploy — not the pipeline.
+
+### Layout
+
+A feed on the left, a **vertical category rail on the right**, sticky as you scroll. Each category shows its post count. Below 900px the rail becomes a horizontally scrolling pill row above the feed, with a collapse toggle that names the current category.
+
+Keyboard: arrow keys move through the rail, Home and End jump to the ends. It's a real ARIA tablist with `aria-orientation="vertical"`.
+
+### Adding or removing a category
+
+One entry in `notes/notes.config.json` — `id`, `type`, `label`, `kicker`, `intro`, `empty`. The build picks it up, the rail renders it, and `new.mjs` scaffolds that type immediately using a generic skeleton until you write a bespoke one. No code change.
+
+Order in the file is order on the page, and the first is selected by default — which is why Troubleshooting sits first.
+
+### What the build guarantees
+
+| Check | On failure |
+|---|---|
+| `title` and `date` present | build fails, nothing deploys |
+| `date` is `YYYY-MM-DD` | build fails |
+| `type` matches a configured category | build fails, listing valid types |
+| Markdown deleted or renamed | its stale `.html` is removed |
+
+### Local preview
+
+```bash
+npm run build && npm run serve      # localhost:8080
+```
+
+Because the payload is inlined, opening `index.html` directly also works now.
+
+---
+type: troubleshooting     # must match a type in notes.config.json
+title: "Pods stuck in Terminating"
+dek: "One sentence on what the reader gets."
+date: 2026-09-07          # YYYY-MM-DD, drives ordering and the date stamp
+tags: [Kubernetes]
+draft: false
+---
+```
+
+The build fails loudly on a missing title, a bad `type`, or a malformed date — in the Action, before anything deploys.
+
+
 ---
 type: case-study        # must match a `type` in notes.config.json
 title: "What a 60% drop in provisioning time actually cost"
