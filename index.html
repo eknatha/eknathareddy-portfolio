@@ -501,38 +501,65 @@ code{font-family:var(--mono);font-size:.92em;color:var(--brass)}
 }
 .cert__verify:hover{color:var(--brass)}
 
-/* ═══════ TABS ═══════ */
-.tabs{
-  display:flex;gap:4px;flex-wrap:wrap;
-  border-bottom:var(--rule);margin-bottom:4px;
+/* ═══════ NOTES — vertical category rail ═══════ */
+.notes{display:grid;gap:30px}
+@media (min-width:900px){
+  .notes{grid-template-columns:minmax(0,1fr) 232px;gap:52px;align-items:start}
+  .notes__nav{position:sticky;top:96px}
 }
+.notes__main{min-width:0}
+
+/* mobile: the rail collapses behind a disclosure */
+.notes__toggle{
+  display:flex;width:100%;align-items:center;justify-content:space-between;gap:14px;
+  appearance:none;cursor:pointer;background:var(--deep);color:var(--ivory);
+  border:var(--rule);border-radius:3px;padding:14px 16px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+}
+.notes__chev{
+  width:9px;height:9px;flex:none;border-right:1.5px solid var(--brass);
+  border-bottom:1.5px solid var(--brass);transform:rotate(45deg) translate(-2px,-2px);
+  transition:transform .3s cubic-bezier(.16,.84,.34,1);
+}
+.notes__toggle[aria-expanded="true"] .notes__chev{transform:rotate(225deg) translate(-2px,-2px)}
+@media (min-width:900px){.notes__toggle{display:none}}
+
+.notes__list{display:flex;flex-direction:column;gap:2px}
+@media (max-width:899px){
+  .notes__list{
+    overflow:hidden;max-height:0;transition:max-height .34s cubic-bezier(.16,.84,.34,1);
+  }
+  .notes__list.open{max-height:420px}
+}
+@media (prefers-reduced-motion:reduce){
+  .notes__list,.notes__chev{transition:none}
+}
+
 .tab{
-  position:relative;appearance:none;background:none;border:0;
-  padding:14px 20px 15px;cursor:pointer;
-  font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--dim);transition:color .22s ease;
-  display:inline-flex;align-items:center;gap:9px;
+  position:relative;appearance:none;background:none;cursor:pointer;text-align:left;
+  border:0;border-left:2px solid var(--line);
+  padding:13px 16px;width:100%;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim);transition:color .22s ease,border-color .22s ease,background .22s ease;
 }
-.tab:first-child{padding-left:0}
-.tab:hover{color:var(--ivory-2)}
-.tab[aria-selected="true"]{color:var(--ivory)}
-.tab::after{
-  content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;
-  background:var(--brass);transform:scaleX(0);transform-origin:left;
-  transition:transform .32s cubic-bezier(.16,.84,.34,1);
+.tab:hover{color:var(--ivory-2);background:var(--deep)}
+.tab[aria-selected="true"]{
+  color:var(--ivory);border-left-color:var(--brass);background:var(--deep);
 }
-.tab:first-child::after{left:0}
-.tab[aria-selected="true"]::after{transform:scaleX(1)}
-@media (prefers-reduced-motion:reduce){.tab::after{transition:none}}
 .tab__n{
   font-size:10px;letter-spacing:.06em;color:var(--brass);
-  border:1px solid var(--line);border-radius:2px;padding:2px 6px;line-height:1.3;
+  border:1px solid var(--line);border-radius:2px;padding:2px 7px;line-height:1.4;flex:none;
 }
 .tab[aria-selected="true"] .tab__n{border-color:var(--brass-lo)}
+@media (max-width:899px){
+  .tab{border-left:0;border-bottom:1px solid var(--line);padding:14px 16px}
+}
+
 .panel[hidden]{display:none}
-.panel__intro{color:var(--dim);font-size:15px;margin:26px 0 0;max-width:58ch}
+.panel__intro{color:var(--dim);font-size:15px;margin:0 0 4px;max-width:58ch}
 .empty{
-  padding:44px 0;border-top:var(--rule);
+  padding:40px 0;border-top:var(--rule);margin-top:24px;
   font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;color:var(--dim);
 }
 .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
@@ -642,7 +669,7 @@ footer{border-top:var(--rule);padding:30px 0 46px}
   .hero h1{font-size:26pt}
   .sec,.close{padding:14px 0;break-inside:avoid}
   .rise{opacity:1!important;transform:none!important}
-  .tabs{display:none!important}
+  .notes__nav{display:none!important}
   .panel[hidden]{display:block!important}
   .xp{break-inside:avoid}
   .xp__body{max-height:none!important;overflow:visible!important}
@@ -850,8 +877,21 @@ footer{border-top:var(--rule);padding:30px 0 46px}
       <p id="notesBlurb"></p>
     </div>
 
-    <div class="tabs" id="tabs" role="tablist" aria-label="Note categories"></div>
-    <div id="panels"></div>
+    <div class="notes">
+      <div class="notes__main" id="panels"></div>
+
+      <nav class="notes__nav" aria-label="Note categories">
+        <button class="notes__toggle" id="notesToggle" type="button"
+                aria-expanded="false" aria-controls="tabs">
+          <span id="notesCurrent">Categories</span>
+          <span class="notes__chev" aria-hidden="true"></span>
+        </button>
+        <div class="notes__list" id="tabs" role="tablist" aria-orientation="vertical"
+             aria-label="Note categories"></div>
+      </nav>
+    </div>
+
+    <script type="application/json" id="notesData">{"generated":"2026-08-26T16:44:50.483Z","heading":"Troubleshooting, TILs, case studies & postmortems","blurb":"Written up as they happen. Troubleshooting is the specific fix; TILs are the small things picked up day to day; case studies and postmortems are the long form.","hideUntilPublished":false,"total":0,"tabs":[{"id":"troubleshooting","label":"Troubleshooting","intro":"Specific failures and the path to the actual cause — including the wrong turns. Written up whenever something takes more than an hour to work out.","empty":"No troubleshooting notes published yet.","items":[]},{"id":"til","label":"TIL","intro":"Today I Learned. Small things picked up day to day — a flag, a default, a behaviour that surprised me. One paragraph is a complete post.","empty":"No TILs published yet.","items":[]},{"id":"case-studies","label":"Case studies","intro":"Problem, the constraints I didn't choose, what I did, what it cost, and what I'd reverse today.","empty":"No case studies published yet.","items":[]},{"id":"postmortems","label":"Postmortems","intro":"Blameless. Timeline, contributing factors, what changed afterwards. Employers anonymised.","empty":"No postmortems published yet.","items":[]},{"id":"blog","label":"Blog","intro":"Shorter pieces — things I've been reading, tools I've tried, opinions I'm still testing.","empty":"No blog posts published yet.","items":[]}]}</script>
   </section>
 
   <!-- ══════════ SITE HEALTH ══════════ -->
@@ -870,8 +910,10 @@ footer{border-top:var(--rule);padding:30px 0 46px}
   <section class="close" id="contact">
     <div class="wrap close__in rise">
       <p class="eyebrow">Get in touch</p>
-      <h2>Tell me what's breaking.</h2>
-      <p>LinkedIn is the fastest way to reach me. I reply to anything specific about platform engineering, reliability or Kubernetes work.</p>
+      <!-- Alternatives, one-line swaps:
+           "Let's talk infrastructure."   ·   "Open to the right problem."   ·   "Let's talk." -->
+      <h2>What are you building?</h2>
+      <p>LinkedIn is the fastest way to reach me. I reply to anything specific &mdash; a platform you're standing up, a reliability problem you're stuck on, or a role you think fits.</p>
       <div class="links">
         <a class="links__primary" href="https://www.linkedin.com/in/eknathareddypuli/" rel="me noopener">Message me on LinkedIn &rarr;</a>
         <a href="https://github.com/eknatha" rel="me noopener">GitHub</a>
@@ -971,8 +1013,8 @@ const TRACK = [
     role: "Junior Business Analyst",
     summary: "Requirements gathering and reporting alongside the delivery team for Lead Generation's.",
     highlights: [
-       "Managed KPO-driven lead generation initiatives targeting enterprise solutions, analyzing market trends to identify high-value opportunities for SAP, IBM, and storage solutions."
-       "Gathered and documented business requirements from enterprise stakeholders, translating complex client data into actionable insights and strategic outreach plans."
+       "Managed KPO-driven lead generation initiatives targeting enterprise solutions, analyzing market trends to identify high-value opportunities for SAP, IBM, and storage solutions.",
+       "Gathered and documented business requirements from enterprise stakeholders, translating complex client data into actionable insights and strategic outreach plans.",
        "Partnered with cross-functional teams to analyze campaign performance metrics, optimize data pipelines, and improve targeted business-to-business (B2B) lead conversion rates."
     ],
     stack: ["SQL", "Reporting", "Microsoft Excel"]
@@ -983,7 +1025,7 @@ const TRACK = [
     role: "System Administrator Trainee",
     summary: "First exposure to systems administration — servers, user management and day-to-day support.",
     highlights: [
-       "Managed end-to-end Linux and Solaris server installations, configuration, and proactive lifecycle maintenance."
+       "Managed end-to-end Linux and Solaris server installations, configuration, and proactive lifecycle maintenance.",
        "Analyzed complex customer infrastructure requirements to design and propose secure, optimized deployment architectures."
     ],
     stack: ["Solaris", "Veritas", "Windows Server", "Linux", "Hardware"]
@@ -994,8 +1036,8 @@ const TRACK = [
     location: "India",
     summary: "Telecom infrastructure and Linux systems operations for carrier networks.",
     highlights: [
-       "Administered high-availability OSS-RC systems, databases, and DWH platforms on Solaris and RHEL, maintaining 99.95% telecom infrastructure uptime through secure upgrades and patch management."
-       "Served on the 24x7 Emergency Recovery Team executing robust DR protocols, critical P1 incident response, and emergency security patching under strict SLA timelines."
+       "Administered high-availability OSS-RC systems, databases, and DWH platforms on Solaris and RHEL, maintaining 99.95% telecom infrastructure uptime through secure upgrades and patch management.",
+       "Served on the 24x7 Emergency Recovery Team executing robust DR protocols, critical P1 incident response, and emergency security patching under strict SLA timelines.",
        "Automated data pipelines and deployment configurations using Shell scripting to eliminate manual vulnerabilities and save 15 hours of operational effort per week."
     ],
     stack: ["Linux", "Networking", "Shell", "HA Cluster", "Storage", "Database", "Solaris"]
@@ -1006,8 +1048,8 @@ const TRACK = [
     location: "Bengaluru",
     summary: "Production support and automation across carrier-scale analytics platforms.",
     highlights: [
-       "Managed large-scale multi-cloud migrations (AWS, Azure, GCP, OpenStack, Hadoop) with zero data loss, while implementing robust DR plans to meet strict RPO/RTO targets."
-       "Led cross-functional initiatives to harden security architecture through advanced network segmentation, IAM policies, and encryption standards across all platforms."
+       "Managed large-scale multi-cloud migrations (AWS, Azure, GCP, OpenStack, Hadoop) with zero data loss, while implementing robust DR plans to meet strict RPO/RTO targets.",
+       "Led cross-functional initiatives to harden security architecture through advanced network segmentation, IAM policies, and encryption standards across all platforms.",
        "Maintained multi-cloud stability and platform integrity through comprehensive infrastructure monitoring, capacity planning, and automated scaling policies."
     ],
     stack: ["Linux", "AWS", "Azure", "Openstack", "Monitoring", "Solaris", "Shell", "Python"]
@@ -1023,8 +1065,8 @@ const TRACK = [
       "Xandr acquired by Microsoft"
     ],
     highlights: [
-       "Orchestrated zero-downtime Kubernetes (Baremetal/EKS/AKS) migrations and scaled high-availability AWS/Azure infrastructure for mission-critical, secure ad-tech microservices."
-       "Administered PostgreSQL/MySQL databases with automated backup, replication topologies, and secure access controls to ensure data integrity and 99.95% uptime."
+       "Orchestrated zero-downtime Kubernetes (Baremetal/EKS/AKS) migrations and scaled high-availability AWS/Azure infrastructure for mission-critical, secure ad-tech microservices.",
+       "Administered PostgreSQL/MySQL databases with automated backup, replication topologies, and secure access controls to ensure data integrity and 99.95% uptime.",
        "Optimized cloud resource utilization and implemented secure infrastructure automation scripts to significantly reduce operational overhead and cloud costs."
     ],
     stack: ["Linux", "Kubernetes", "Database", "Azure", "KVM", "Monitoring", "Incident response", "Python"]
@@ -1035,8 +1077,8 @@ const TRACK = [
     location: "Bengaluru",
     summary: "OpenStack and Kubernetes private cloud, with Terraform provisioning pipelines.",
     highlights: [
-      "Managed carrier-grade Kubernetes and Nokia Container Services (NCS) platforms, implementing robust RBAC security policies, CNI networking, and CSI storage."
-      "Automated multi-cloud provisioning using Terraform to accelerate spin-up times by 50% while reducing manual configuration errors and security gaps."
+      "Managed carrier-grade Kubernetes and Nokia Container Services (NCS) platforms, implementing robust RBAC security policies, CNI networking, and CSI storage.",
+      "Automated multi-cloud provisioning using Terraform to accelerate spin-up times by 50% while reducing manual configuration errors and security gaps.",
       "Deployed Prometheus/Grafana observability stacks and established secure Helm release standards while mentoring junior engineers on container security best practices."
     ],
     stack: ["OpenStack", "Kubernetes", "Terraform", "Ansible", "Linux", "Security", "RBAC"]
@@ -1048,11 +1090,11 @@ const TRACK = [
     location: "Bengaluru",
     summary: "Building and operating production infrastructure across Linux, Kubernetes, OpenStack and cloud platforms, with a focus on automation, reliability and platform engineering.",
     highlights: [
-       "Led OpenStack and Kubernetes platform engineering using Terraform and Go to automate secure IaC pipelines, cutting provisioning times by 50% with a 99.9%+ SLA."
-       "Collaborated across infrastructure and database teams to enforce security hardening standards, optimize deployment efficiency, and ensure data integrity."
+       "Led OpenStack and Kubernetes platform engineering using Terraform and Go to automate secure IaC pipelines, cutting provisioning times by 50% with a 99.9%+ SLA.",
+       "Collaborated across infrastructure and database teams to enforce security hardening standards, optimize deployment efficiency, and ensure data integrity.",
        "Resolved critical P1/P2 production incidents and established automated remediation runbooks while mentoring engineers on operational security best practices."
     ],
-    stack: ["Kubernetes", "Terraform", "AWS", "Azure", "Openstack" "Python", "Linux", "RBAC"]
+    stack: ["Kubernetes", "Terraform", "AWS", "Azure", "Openstack", "Python", "Linux", "RBAC"]
   }
 ];
 
@@ -1388,7 +1430,7 @@ safe(function () {
 
    The only thing configured on this page is where to fetch.
    ══════════════════════════════════════════════════════════ */
-const NOTES_SOURCE = "/notes/index.json";
+const NOTES_SOURCE = "/notes/index.json";   // fallback only
 
 safe(function () {
   var sec = document.getElementById('notes');
@@ -1396,23 +1438,32 @@ safe(function () {
   var panels = document.getElementById('panels');
   var heading = document.getElementById('notesHeading');
   var blurb = document.getElementById('notesBlurb');
+  var toggle = document.getElementById('notesToggle');
+  var current = document.getElementById('notesCurrent');
   var navLink = document.querySelector('.rail__nav a[href="#notes"]');
-  if (!sec || !tablist || !panels || !window.fetch) return hide();
+  var inline = document.getElementById('notesData');
+  if (!sec || !tablist || !panels) return;
 
-  fetch(NOTES_SOURCE, { cache: 'no-store' })
-    .then(function (r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
-    .then(render)
-    .catch(hide);   // index not built yet, or offline — say nothing
+  // The build inlines the payload, so this normally needs no network at all.
+  var seeded = null;
+  try { seeded = inline ? JSON.parse(inline.textContent) : null; } catch (e) {}
+
+  if (seeded && seeded.tabs) {
+    render(seeded);
+  } else if (window.fetch) {
+    fetch(NOTES_SOURCE, { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(render)
+      .catch(hide);
+  } else {
+    hide();
+  }
 
   function hide() { if (navLink) navLink.remove(); }
 
   function render(data) {
     var tabs = (data && Array.isArray(data.tabs)) ? data.tabs : [];
     var total = tabs.reduce(function (n, t) { return n + (t.items || []).length; }, 0);
-
     if (!tabs.length || (!total && data.hideUntilPublished)) return hide();
 
     sec.hidden = false;
@@ -1426,7 +1477,6 @@ safe(function () {
     tabs.forEach(function (tab, index) {
       var items = (tab.items || []).slice();
 
-      // ── tab button ──
       var btn = document.createElement('button');
       btn.className = 'tab';
       btn.type = 'button';
@@ -1435,17 +1485,19 @@ safe(function () {
       btn.setAttribute('aria-controls', 'panel-' + tab.id);
       btn.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
       btn.tabIndex = index === 0 ? 0 : -1;
-      btn.appendChild(document.createTextNode(tab.label || tab.id));
-      if (items.length) {
-        var n = document.createElement('span');
-        n.className = 'tab__n';
-        n.textContent = items.length;
-        btn.appendChild(n);
-      }
+
+      var label = document.createElement('span');
+      label.textContent = tab.label || tab.id;
+      btn.appendChild(label);
+
+      var n = document.createElement('span');
+      n.className = 'tab__n';
+      n.textContent = items.length;
+      btn.appendChild(n);
+
       tablist.appendChild(btn);
       buttons.push(btn);
 
-      // ── panel ──
       var panel = document.createElement('div');
       panel.className = 'panel';
       panel.id = 'panel-' + tab.id;
@@ -1468,7 +1520,7 @@ safe(function () {
       } else {
         var ul = document.createElement('ul');
         ul.className = 'rows';
-        ul.style.marginTop = '26px';
+        ul.style.marginTop = '22px';
         items.forEach(function (item) { ul.appendChild(row(item)); });
         panel.appendChild(ul);
       }
@@ -1476,21 +1528,38 @@ safe(function () {
       panels.appendChild(panel);
     });
 
+    if (current && tabs[0]) current.textContent = tabs[0].label;
+
     tablist.addEventListener('click', function (e) {
       var b = e.target.closest('.tab');
-      if (b) select(buttons.indexOf(b));
+      if (b) { select(buttons.indexOf(b)); closeRail(); }
     });
 
+    // Vertical rail: Up/Down are the natural keys here, not Left/Right.
     tablist.addEventListener('keydown', function (e) {
       var i = buttons.indexOf(document.activeElement);
       if (i < 0) return;
       var next =
-        e.key === 'ArrowRight' ? (i + 1) % buttons.length :
-        e.key === 'ArrowLeft'  ? (i - 1 + buttons.length) % buttons.length :
-        e.key === 'Home'       ? 0 :
-        e.key === 'End'        ? buttons.length - 1 : -1;
+        (e.key === 'ArrowDown' || e.key === 'ArrowRight') ? (i + 1) % buttons.length :
+        (e.key === 'ArrowUp'   || e.key === 'ArrowLeft')  ? (i - 1 + buttons.length) % buttons.length :
+        e.key === 'Home' ? 0 :
+        e.key === 'End'  ? buttons.length - 1 : -1;
       if (next >= 0) { e.preventDefault(); select(next); }
     });
+
+    if (toggle) {
+      toggle.addEventListener('click', function () {
+        var open = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', open ? 'false' : 'true');
+        tablist.classList.toggle('open', !open);
+      });
+    }
+
+    function closeRail() {
+      if (!toggle) return;
+      toggle.setAttribute('aria-expanded', 'false');
+      tablist.classList.remove('open');
+    }
 
     function select(i) {
       buttons.forEach(function (b, j) {
@@ -1500,6 +1569,7 @@ safe(function () {
         document.getElementById(b.getAttribute('aria-controls')).hidden = !on;
       });
       buttons[i].focus();
+      if (current) current.textContent = tabs[i].label;
     }
   }
 
@@ -1510,7 +1580,7 @@ safe(function () {
 
     var meta = document.createElement('span');
     meta.className = 'rows__meta';
-    meta.textContent = pretty(item.date);
+    meta.textContent = item.displayDate || pretty(item.date);
 
     var title = document.createElement('span');
     title.className = 'rows__title';
@@ -1547,6 +1617,7 @@ safe(function () {
     return p.length < 2 ? (d || '') : p[0] + ' · ' + p[1];
   }
 });
+
 
 /* ══════════════════════════════════════════════════════════
    AVAILABILITY
