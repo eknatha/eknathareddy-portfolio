@@ -755,7 +755,7 @@ footer{border-top:var(--rule);padding:30px 0 46px}
         platforms across AWS, Azure and GCP — automating repetitive operations,
         simplifying how infrastructure gets managed, and giving engineering
         teams a path to production that doesn't route through a ticket queue.
-        Currently going deeper on Go and Google Cloud.
+        Currently going deeper on Go.
       </p>
       <p>
         Outside of work I make practical visual guides on Kubernetes, Linux,
@@ -807,7 +807,7 @@ footer{border-top:var(--rule);padding:30px 0 46px}
       </div>
       <div class="tool__row">
         <h3>Cloud</h3>
-        <ul class="chips"><li>AWS</li><li>Azure</li><li>Hybrid &amp; private cloud</li><li>GCP — working knowledge</li></ul>
+        <ul class="chips"><li>AWS</li><li>Azure</li><li>Hybrid &amp; private cloud</li><li>GCP</li></ul>
       </div>
       <div class="tool__row">
         <h3>Databases</h3>
@@ -895,7 +895,7 @@ footer{border-top:var(--rule);padding:30px 0 46px}
       </nav>
     </div>
 
-    <script type="application/json" id="notesData">{"generated":"2026-08-26T16:44:50.483Z","heading":"Troubleshooting, TILs, case studies & postmortems","blurb":"Written up as they happen. Troubleshooting is the specific fix; TILs are the small things picked up day to day; case studies and postmortems are the long form.","hideUntilPublished":false,"total":0,"tabs":[{"id":"troubleshooting","label":"Troubleshooting","intro":"Specific failures and the path to the actual cause — including the wrong turns. Written up whenever something takes more than an hour to work out.","empty":"No troubleshooting notes published yet.","items":[]},{"id":"til","label":"TIL","intro":"Today I Learned. Small things picked up day to day — a flag, a default, a behaviour that surprised me. One paragraph is a complete post.","empty":"No TILs published yet.","items":[]},{"id":"case-studies","label":"Case studies","intro":"Problem, the constraints I didn't choose, what I did, what it cost, and what I'd reverse today.","empty":"No case studies published yet.","items":[]},{"id":"postmortems","label":"Postmortems","intro":"Blameless. Timeline, contributing factors, what changed afterwards. Employers anonymised.","empty":"No postmortems published yet.","items":[]},{"id":"blog","label":"Blog","intro":"Shorter pieces — things I've been reading, tools I've tried, opinions I'm still testing.","empty":"No blog posts published yet.","items":[]}]}</script>
+    <script type="application/json" id="notesData">{"generated":"2026-08-30T10:49:44.057Z","heading":"Troubleshooting, TILs, case studies & postmortems","blurb":"Written up as they happen. Troubleshooting is the specific fix; TILs are the small things picked up day to day; case studies and postmortems are the long form.","hideUntilPublished":false,"total":1,"tabs":[{"id":"troubleshooting","label":"Troubleshooting","intro":"Specific failures and the path to the actual cause — including the wrong turns. Written up whenever something takes more than an hour to work out.","empty":"No troubleshooting notes published yet.","items":[]},{"id":"til","label":"TIL","intro":"Today I Learned. Small things picked up day to day — a flag, a default, a behaviour that surprised me. One paragraph is a complete post.","empty":"No TILs published yet.","items":[]},{"id":"case-studies","label":"Case studies","intro":"Problem, the constraints I didn't choose, what I did, what it cost, and what I'd reverse today.","empty":"No case studies published yet.","items":[{"title":"Kubernetes architecture, from an operator's chair","dek":"The control plane explained through what actually breaks, and which component to blame when it does.","date":"2026-08-26","displayDate":"26 Aug 2026","tags":["Kubernetes","Architecture","Operations"],"url":"/notes/kubernetes-architecture-from-an-operators-chair.html","readingTime":"2 min read"}]},{"id":"postmortems","label":"Postmortems","intro":"Blameless. Timeline, contributing factors, what changed afterwards. Employers anonymised.","empty":"No postmortems published yet.","items":[]},{"id":"blog","label":"Blog","intro":"Shorter pieces — things I've been reading, tools I've tried, opinions I'm still testing.","empty":"No blog posts published yet.","items":[]}]}</script>
   </section>
 
   <!-- ══════════ SITE HEALTH ══════════ -->
@@ -1303,6 +1303,13 @@ safe(function () {
 const CERTS = {
   note: "Add a verification URL wherever the issuer publishes one — an unverifiable credential is worth less than an unlisted one.",
   items: [
+    {
+      abbr: "GCP ACE",
+      name: "Google Cloud Associate Cloud Engineer",
+      issuer: "Google Cloud",
+      status: "active",
+      meta: "Issued Aug 2026 · valid to Aug 2029"
+    },
     {
       abbr: "CKA",
       name: "Certified Kubernetes Administrator",

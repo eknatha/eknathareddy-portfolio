@@ -1,13 +1,13 @@
 {
-  "builtAt": "2026-08-26T17:00:10.528Z",
+  "builtAt": "2026-08-30T10:49:44.086Z",
   "commit": null,
   "branch": null,
   "runner": "local",
   "notes": {
-    "published": 0,
+    "published": 1,
     "drafts": 0
   },
-  "pages": 1,
+  "pages": 2,
   "runtimeDependencies": 0,
   "deploys": []
 }
