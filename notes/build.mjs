@@ -71,6 +71,14 @@ for (const file of files) {
 
   if (fm.draft) { drafts++; console.log(`· draft  ${file}`); continue; }
 
+  // {{svg:name}} inlines notes/assets/name.svg. Inline rather than <img> so
+  // the diagram inherits the page's CSS variables and follows the theme.
+  var withSvg = content.replace(/\{\{svg:([A-Za-z0-9._-]+)\}\}/g, (m, id) => {
+    const p = join(HERE, 'assets', id.endsWith('.svg') ? id : id + '.svg');
+    try { return readFileSync(p, 'utf8'); }
+    catch { fail(`${file}: {{svg:${id}}} — notes/assets/${id}.svg not found`); return ''; }
+  });
+
   const slug = fm.slug || file.replace(/^\d{4}-\d{2}-\d{2}-/, '').replace(/\.md$/, '');
   const words = content.split(/\s+/).filter(Boolean).length;
   const mins = Math.max(1, Math.round(words / 220));
@@ -91,7 +99,7 @@ for (const file of files) {
     tags,
     readingTime: `${mins} min read`,
     url: `/notes/${slug}.html`,
-    html: marked.parse(content)
+    html: marked.parse(withSvg)
   };
 
   writeFileSync(join(HERE, `${slug}.html`), page(note));
@@ -241,6 +249,11 @@ article li{margin:8px 0}
 article strong{color:var(--ivory);font-weight:650}
 article hr{margin:44px 0 0;border:0;border-top:var(--rule)}
 article img{max-width:100%;height:auto;margin:28px 0 0;border:var(--rule);border-radius:3px}
+article figure{margin:34px 0 0}
+article figure svg{display:block;width:100%;height:auto;background:var(--deep);border:var(--rule);border-radius:3px;padding:18px}
+article figcaption{margin-top:12px;font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--dim)}
+article > svg{display:block;width:100%;height:auto;margin:34px 0 0;background:var(--deep);border:var(--rule);border-radius:3px;padding:18px}
+article p > svg{display:block;width:100%;height:auto;margin:0;background:var(--deep);border:var(--rule);border-radius:3px;padding:18px}
 blockquote{margin:34px 0 0;padding:20px 26px;border-left:2px solid var(--brass);background:var(--deep);color:var(--ivory-2);font-family:var(--serif);font-size:19px;line-height:1.5}
 blockquote p:first-child{margin:0}
 pre{margin:26px 0 0;padding:20px 22px;overflow-x:auto;background:var(--deep);border:var(--rule);border-radius:3px;font-family:var(--mono);font-size:13px;line-height:1.62;color:var(--ivory-2)}

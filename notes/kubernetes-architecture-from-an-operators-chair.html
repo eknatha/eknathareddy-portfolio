@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kubernetes architecture, from an operator&#39;s chair — Eknatha Reddy Puli</title>
+<meta name="description" content="The control plane explained through what actually breaks, and which component to blame when it does.">
+<link rel="canonical" href="https://eknathareddy.com/notes/kubernetes-architecture-from-an-operators-chair.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes architecture, from an operator&#39;s chair">
+<meta property="og:description" content="The control plane explained through what actually breaks, and which component to blame when it does.">
+<meta property="og:url" content="https://eknathareddy.com/notes/kubernetes-architecture-from-an-operators-chair.html">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#0A1013">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230A1013'/><path d='M9 9h14M9 16h11M9 23h14' stroke='%23C8A56A' stroke-width='2.4' stroke-linecap='round'/></svg>">
+<style>
+:root{--void:#0A1013;--deep:#0E161A;--line:#1D2C33;--line-2:#294049;--ivory:#EDE8DE;--ivory-2:#C3C7C4;--dim:#7E8F94;--brass:#C8A56A;--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;--mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Mono",Menlo,Consolas,monospace;--pad:clamp(22px,5.5vw,84px);--rule:1px solid var(--line)}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--void);color:var(--ivory);font-family:var(--sans);line-height:1.62;-webkit-font-smoothing:antialiased}
+::selection{background:var(--brass);color:var(--void)}
+a{color:var(--brass)}
+:focus-visible{outline:2px solid var(--brass);outline-offset:4px;border-radius:2px}
+.wrap{max-width:720px;margin:0 auto;padding:0 var(--pad)}
+.back{display:inline-flex;align-items:center;gap:9px;margin-top:44px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .2s ease}
+.back:hover{color:var(--brass)}
+header.art{padding:42px 0 34px;border-bottom:var(--rule)}
+.kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--brass);margin:0}
+h1{margin:22px 0 0;font-size:clamp(32px,5.6vw,52px);font-weight:700;letter-spacing:-.038em;line-height:1.06}
+.dek{margin:20px 0 0;font-family:var(--serif);font-size:clamp(18px,2.4vw,23px);line-height:1.5;color:var(--ivory-2)}
+.meta{display:flex;flex-wrap:wrap;gap:20px;margin-top:28px;font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;color:var(--dim)}
+article{padding:14px 0 60px;font-size:17.5px}
+article h2{margin:52px 0 0;font-size:clamp(21px,3vw,27px);font-weight:700;letter-spacing:-.028em;line-height:1.2}
+article h3{margin:36px 0 0;font-size:18px;font-weight:650;letter-spacing:-.018em;color:var(--ivory-2)}
+article p{margin:18px 0 0;color:var(--ivory-2)}
+article ul,article ol{margin:18px 0 0;padding-left:22px;color:var(--ivory-2)}
+article li{margin:8px 0}
+article strong{color:var(--ivory);font-weight:650}
+article hr{margin:44px 0 0;border:0;border-top:var(--rule)}
+article img{max-width:100%;height:auto;margin:28px 0 0;border:var(--rule);border-radius:3px}
+article figure{margin:34px 0 0}
+article figure svg{display:block;width:100%;height:auto;background:var(--deep);border:var(--rule);border-radius:3px;padding:18px}
+article figcaption{margin-top:12px;font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--dim)}
+article > svg{display:block;width:100%;height:auto;margin:34px 0 0;background:var(--deep);border:var(--rule);border-radius:3px;padding:18px}
+article p > svg{display:block;width:100%;height:auto;margin:0;background:var(--deep);border:var(--rule);border-radius:3px;padding:18px}
+blockquote{margin:34px 0 0;padding:20px 26px;border-left:2px solid var(--brass);background:var(--deep);color:var(--ivory-2);font-family:var(--serif);font-size:19px;line-height:1.5}
+blockquote p:first-child{margin:0}
+pre{margin:26px 0 0;padding:20px 22px;overflow-x:auto;background:var(--deep);border:var(--rule);border-radius:3px;font-family:var(--mono);font-size:13px;line-height:1.62;color:var(--ivory-2)}
+code{font-family:var(--mono);font-size:.9em;color:var(--brass)}
+pre code{color:inherit;font-size:inherit}
+table{width:100%;border-collapse:collapse;margin:28px 0 0;font-size:15px}
+th,td{text-align:left;padding:12px 14px;border-bottom:var(--rule);color:var(--ivory-2)}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);font-weight:600}
+footer.art{border-top:var(--rule);padding:34px 0 60px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+footer.art a{color:var(--dim);text-decoration:none}
+footer.art a:hover{color:var(--brass)}
+@media print{:root{--void:#fff;--deep:#fff;--line:#c9c9c9;--ivory:#000;--ivory-2:#222;--dim:#555;--brass:#6b5220}body{background:#fff;color:#000;font-size:11pt}.back{display:none}pre{background:#f6f6f6}}
+</style>
+</head>
+<body>
+<div class="wrap"><a class="back" href="/#notes">&larr; All notes</a></div>
+<header class="art wrap">
+  <p class="kicker">Case study</p>
+  <h1>Kubernetes architecture, from an operator&#39;s chair</h1>
+  <p class="dek">The control plane explained through what actually breaks, and which component to blame when it does.</p>
+  <div class="meta"><span>26 Aug 2026</span><span>2 min read</span><span>Kubernetes · Architecture · Operations</span></div>
+</header>
+<article class="wrap">
+<p>Every Kubernetes diagram shows the same seven boxes. Very few explain which
+box wakes you at 3am, or why the answer is almost always the same one.</p>
+<p><svg viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Kubernetes architecture: every component talks to the API server, which is the only writer to etcd. Control plane holds etcd, scheduler, controller manager and cloud controller manager. Each worker node runs kubelet, kube-proxy and a container runtime.">
+  <style>
+    .box   { fill: var(--panel);  stroke: var(--line-2); stroke-width: 1; }
+    .zone  { fill: none;          stroke: var(--line);   stroke-width: 1; stroke-dasharray: 4 4; }
+    .api   { fill: var(--deep);   stroke: var(--brass);  stroke-width: 1.5; }
+    .t     { fill: var(--ivory);  font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 12px; }
+    .tb    { fill: var(--ivory);  font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 13px; font-weight: 600; }
+    .sub   { fill: var(--dim);    font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 10px; letter-spacing: .12em; }
+    .lbl   { fill: var(--brass);  font-family: ui-monospace, &quot;SF Mono&quot;, Menlo, monospace; font-size: 10px; letter-spacing: .16em; }
+    .flow  { stroke: var(--line-2); stroke-width: 1.2; fill: none; }
+    .flow-k{ stroke: var(--brass);  stroke-width: 1.6; fill: none; }
+  </style></p>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="var(--line-2)"/>
+    </marker>
+    <marker id="ak" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="var(--brass)"/>
+    </marker>
+  </defs>
+
+  <!-- ── control plane ─────────────────────────────────────────── -->
+  <rect class="zone" x="20" y="40" width="440" height="330" rx="4"/>
+  <text class="lbl" x="34" y="30">CONTROL PLANE</text>
+
+  <!-- api server: the hub -->
+  <rect class="api" x="150" y="150" width="180" height="70" rx="3"/>
+  <text class="tb" x="240" y="180" text-anchor="middle">kube-apiserver</text>
+  <text class="sub" x="240" y="200" text-anchor="middle">THE ONLY DOOR</text>
+
+  <!-- etcd -->
+  <rect class="box" x="150" y="280" width="180" height="62" rx="3"/>
+  <text class="tb" x="240" y="308" text-anchor="middle">etcd</text>
+  <text class="sub" x="240" y="326" text-anchor="middle">CLUSTER STATE</text>
+
+  <!-- scheduler -->
+  <rect class="box" x="40" y="62" width="180" height="58" rx="3"/>
+  <text class="t" x="130" y="88" text-anchor="middle">kube-scheduler</text>
+  <text class="sub" x="130" y="106" text-anchor="middle">POD → NODE</text>
+
+  <!-- controller manager -->
+  <rect class="box" x="260" y="62" width="180" height="58" rx="3"/>
+  <text class="t" x="350" y="88" text-anchor="middle">controller-manager</text>
+  <text class="sub" x="350" y="106" text-anchor="middle">RECONCILE LOOPS</text>
+
+  <!-- cloud controller -->
+  <rect class="box" x="40" y="280" width="90" height="62" rx="3"/>
+  <text class="t" x="85" y="305" text-anchor="middle" font-size="11">cloud-</text>
+  <text class="t" x="85" y="320" text-anchor="middle" font-size="11">controller</text>
+
+  <!-- links into the api server -->
+  <path class="flow" d="M130 120 L130 185 L148 185" marker-end="url(#a)"/>
+  <path class="flow" d="M350 120 L350 185 L332 185" marker-end="url(#a)"/>
+  <path class="flow" d="M85 280 L85 185 L148 185" marker-end="url(#a)"/>
+  <path class="flow-k" d="M240 220 L240 278" marker-end="url(#ak)"/>
+  <text class="sub" x="252" y="253">WRITES</text>
+
+  <!-- ── worker nodes ──────────────────────────────────────────── -->
+  <rect class="zone" x="520" y="40" width="360" height="150" rx="4"/>
+  <text class="lbl" x="534" y="30">WORKER NODE</text>
+  <rect class="box" x="540" y="62" width="150" height="46" rx="3"/>
+  <text class="t" x="615" y="90" text-anchor="middle">kubelet</text>
+  <rect class="box" x="710" y="62" width="150" height="46" rx="3"/>
+  <text class="t" x="785" y="90" text-anchor="middle">kube-proxy</text>
+  <rect class="box" x="540" y="126" width="320" height="46" rx="3"/>
+  <text class="t" x="700" y="154" text-anchor="middle">container runtime — containerd / CRI-O</text>
+
+  <rect class="zone" x="520" y="215" width="360" height="150" rx="4"/>
+  <text class="lbl" x="534" y="206">WORKER NODE</text>
+  <rect class="box" x="540" y="237" width="150" height="46" rx="3"/>
+  <text class="t" x="615" y="265" text-anchor="middle">kubelet</text>
+  <rect class="box" x="710" y="237" width="150" height="46" rx="3"/>
+  <text class="t" x="785" y="265" text-anchor="middle">kube-proxy</text>
+  <rect class="box" x="540" y="301" width="320" height="46" rx="3"/>
+  <text class="t" x="700" y="329" text-anchor="middle">container runtime — containerd / CRI-O</text>
+
+  <!-- kubelet → api server (the only path) -->
+  <path class="flow-k" d="M540 85 L400 85 L400 168 L332 168" marker-end="url(#ak)"/>
+  <path class="flow-k" d="M540 260 L470 260 L470 200 L332 200" marker-end="url(#ak)"/>
+
+  <!-- ── clients ───────────────────────────────────────────────── -->
+  <rect class="box" x="150" y="430" width="180" height="52" rx="3"/>
+  <text class="t" x="240" y="455" text-anchor="middle">kubectl / CI / operators</text>
+  <text class="sub" x="240" y="472" text-anchor="middle">EVERYTHING ELSE</text>
+  <path class="flow-k" d="M240 430 L240 225" marker-end="url(#ak)"/>
+
+<p>  <text class="sub" x="20" y="520">NO COMPONENT TALKS TO ETCD DIRECTLY — THE API SERVER IS THE ONLY WRITER.</text>
+  <text class="sub" x="20" y="540">EVERY LINE ABOVE IS A WATCH OR A WRITE AGAINST THE API SERVER.</text>
+</svg></p>
+<h2>One idea does most of the work</h2>
+<p>There is no service mesh of internal calls between components. <strong>Nothing talks
+to anything except the API server</strong>, and the API server is the only process
+that writes to etcd.</p>
+<p>The scheduler doesn&#39;t tell the kubelet to start a pod. It writes a node name
+onto the pod object. The kubelet — watching the API server for pods assigned
+to it — notices and acts. The controller manager doesn&#39;t command anything
+either; it watches for a gap between desired and actual state and writes an
+object to close it.</p>
+<p>Once you hold that, most failures sort themselves into two buckets: something
+can&#39;t reach the API server, or something can but doesn&#39;t like what it sees.</p>
+<h2>The control plane</h2>
+<p><strong>kube-apiserver</strong> — the only door. Authentication, authorisation, admission,
+validation, then persistence. Stateless, so you scale it horizontally.</p>
+<blockquote>
+<p><em>Your production note: what you&#39;ve seen when the API server is slow rather
+than down. Latency here doesn&#39;t fail loudly, it makes everything else look
+broken.</em></p>
+</blockquote>
+<p><strong>etcd</strong> — the entire cluster state, and the component that most deserves your
+attention. Quorum, disk latency, and backups that you have actually restored.</p>
+<blockquote>
+<p><em>Your production note: etcd disk latency, defrag, or a restore you&#39;ve done.
+This is the section that separates operators from readers.</em></p>
+</blockquote>
+<p><strong>kube-scheduler</strong> — filters nodes, scores what&#39;s left, writes the binding.</p>
+<blockquote>
+<p><em>Your production note: a scheduling decision that surprised you — taints,
+affinity, topology spread, or resource requests nobody had set.</em></p>
+</blockquote>
+<p><strong>kube-controller-manager</strong> — dozens of reconcile loops in one binary.</p>
+<p><strong>cloud-controller-manager</strong> — where the cluster meets the provider. Load
+balancers, routes, node lifecycle.</p>
+<h2>The node</h2>
+<p><strong>kubelet</strong> — the only thing on the node that talks to the API server. It
+watches for pods bound to its node and makes the node match.</p>
+<blockquote>
+<p><em>Your production note: what you&#39;ve debugged here. Node NotReady, disk
+pressure, a runtime that stopped responding.</em></p>
+</blockquote>
+<p><strong>kube-proxy</strong> — programs iptables or IPVS so a Service IP reaches a pod.</p>
+<p><strong>container runtime</strong> — containerd or CRI-O, driven over the CRI.</p>
+<h2>What this means when something breaks</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Where to look first</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Nothing schedules anywhere</td>
+<td>scheduler, or every node is unschedulable</td>
+</tr>
+<tr>
+<td>One node stops taking pods</td>
+<td>kubelet on that node</td>
+</tr>
+<tr>
+<td>Service resolves but doesn&#39;t connect</td>
+<td>kube-proxy, CNI</td>
+</tr>
+<tr>
+<td>Everything is slow and nothing is down</td>
+<td>API server latency, etcd disk</td>
+</tr>
+<tr>
+<td>Pods stuck Terminating</td>
+<td>finalizers, kubelet, runtime</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><em>Your production note: one real incident, anonymised, walked through with
+this table. That&#39;s the paragraph people will remember.</em></p>
+</blockquote>
+<h2>What I&#39;d tell someone learning this</h2>
+<p><em>Your closing. What you wish you&#39;d understood earlier — this is where the
+piece stops being an explainer and becomes yours.</em></p>
+
+</article>
+<footer class="art wrap">
+  <a href="/#notes">All notes</a> &nbsp;·&nbsp; <a href="/">eknathareddy.com</a> &nbsp;·&nbsp; &copy; 2026 Eknatha Reddy Puli
+</footer>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Kubernetes architecture, from an operator's chair",
+  "description": "The control plane explained through what actually breaks, and which component to blame when it does.",
+  "datePublished": "2026-08-26",
+  "url": "https://eknathareddy.com/notes/kubernetes-architecture-from-an-operators-chair.html",
+  "keywords": "Kubernetes, Architecture, Operations",
+  "author": {
+    "@type": "Person",
+    "name": "Eknatha Reddy Puli",
+    "url": "https://eknathareddy.com/"
+  }
+}
+</script>
+</body>
+</html>

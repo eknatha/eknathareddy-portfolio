@@ -1,9 +1,9 @@
 {
-  "generated": "2026-08-26T17:00:10.488Z",
+  "generated": "2026-08-30T10:49:44.057Z",
   "heading": "Troubleshooting, TILs, case studies & postmortems",
   "blurb": "Written up as they happen. Troubleshooting is the specific fix; TILs are the small things picked up day to day; case studies and postmortems are the long form.",
   "hideUntilPublished": false,
-  "total": 0,
+  "total": 1,
   "tabs": [
     {
       "id": "troubleshooting",
@@ -24,7 +24,21 @@
       "label": "Case studies",
       "intro": "Problem, the constraints I didn't choose, what I did, what it cost, and what I'd reverse today.",
       "empty": "No case studies published yet.",
-      "items": []
+      "items": [
+        {
+          "title": "Kubernetes architecture, from an operator's chair",
+          "dek": "The control plane explained through what actually breaks, and which component to blame when it does.",
+          "date": "2026-08-26",
+          "displayDate": "26 Aug 2026",
+          "tags": [
+            "Kubernetes",
+            "Architecture",
+            "Operations"
+          ],
+          "url": "/notes/kubernetes-architecture-from-an-operators-chair.html",
+          "readingTime": "2 min read"
+        }
+      ]
     },
     {
       "id": "postmortems",
