@@ -1,0 +1,90 @@
+<svg viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Kubernetes architecture: every component talks to the API server, which is the only writer to etcd. Control plane holds etcd, scheduler, controller manager and cloud controller manager. Each worker node runs kubelet, kube-proxy and a container runtime.">
+  <style>
+    .box   { fill: var(--panel);  stroke: var(--line-2); stroke-width: 1; }
+    .zone  { fill: none;          stroke: var(--line);   stroke-width: 1; stroke-dasharray: 4 4; }
+    .api   { fill: var(--deep);   stroke: var(--brass);  stroke-width: 1.5; }
+    .t     { fill: var(--ivory);  font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; }
+    .tb    { fill: var(--ivory);  font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; font-weight: 600; }
+    .sub   { fill: var(--dim);    font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10px; letter-spacing: .12em; }
+    .lbl   { fill: var(--brass);  font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10px; letter-spacing: .16em; }
+    .flow  { stroke: var(--line-2); stroke-width: 1.2; fill: none; }
+    .flow-k{ stroke: var(--brass);  stroke-width: 1.6; fill: none; }
+  </style>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="var(--line-2)"/>
+    </marker>
+    <marker id="ak" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="var(--brass)"/>
+    </marker>
+  </defs>
+
+  <!-- ── control plane ─────────────────────────────────────────── -->
+  <rect class="zone" x="20" y="40" width="440" height="330" rx="4"/>
+  <text class="lbl" x="34" y="30">CONTROL PLANE</text>
+
+  <!-- api server: the hub -->
+  <rect class="api" x="150" y="150" width="180" height="70" rx="3"/>
+  <text class="tb" x="240" y="180" text-anchor="middle">kube-apiserver</text>
+  <text class="sub" x="240" y="200" text-anchor="middle">THE ONLY DOOR</text>
+
+  <!-- etcd -->
+  <rect class="box" x="150" y="280" width="180" height="62" rx="3"/>
+  <text class="tb" x="240" y="308" text-anchor="middle">etcd</text>
+  <text class="sub" x="240" y="326" text-anchor="middle">CLUSTER STATE</text>
+
+  <!-- scheduler -->
+  <rect class="box" x="40" y="62" width="180" height="58" rx="3"/>
+  <text class="t" x="130" y="88" text-anchor="middle">kube-scheduler</text>
+  <text class="sub" x="130" y="106" text-anchor="middle">POD → NODE</text>
+
+  <!-- controller manager -->
+  <rect class="box" x="260" y="62" width="180" height="58" rx="3"/>
+  <text class="t" x="350" y="88" text-anchor="middle">controller-manager</text>
+  <text class="sub" x="350" y="106" text-anchor="middle">RECONCILE LOOPS</text>
+
+  <!-- cloud controller -->
+  <rect class="box" x="40" y="280" width="90" height="62" rx="3"/>
+  <text class="t" x="85" y="305" text-anchor="middle" font-size="11">cloud-</text>
+  <text class="t" x="85" y="320" text-anchor="middle" font-size="11">controller</text>
+
+  <!-- links into the api server -->
+  <path class="flow" d="M130 120 L130 185 L148 185" marker-end="url(#a)"/>
+  <path class="flow" d="M350 120 L350 185 L332 185" marker-end="url(#a)"/>
+  <path class="flow" d="M85 280 L85 185 L148 185" marker-end="url(#a)"/>
+  <path class="flow-k" d="M240 220 L240 278" marker-end="url(#ak)"/>
+  <text class="sub" x="252" y="253">WRITES</text>
+
+  <!-- ── worker nodes ──────────────────────────────────────────── -->
+  <rect class="zone" x="520" y="40" width="360" height="150" rx="4"/>
+  <text class="lbl" x="534" y="30">WORKER NODE</text>
+  <rect class="box" x="540" y="62" width="150" height="46" rx="3"/>
+  <text class="t" x="615" y="90" text-anchor="middle">kubelet</text>
+  <rect class="box" x="710" y="62" width="150" height="46" rx="3"/>
+  <text class="t" x="785" y="90" text-anchor="middle">kube-proxy</text>
+  <rect class="box" x="540" y="126" width="320" height="46" rx="3"/>
+  <text class="t" x="700" y="154" text-anchor="middle">container runtime — containerd / CRI-O</text>
+
+  <rect class="zone" x="520" y="215" width="360" height="150" rx="4"/>
+  <text class="lbl" x="534" y="206">WORKER NODE</text>
+  <rect class="box" x="540" y="237" width="150" height="46" rx="3"/>
+  <text class="t" x="615" y="265" text-anchor="middle">kubelet</text>
+  <rect class="box" x="710" y="237" width="150" height="46" rx="3"/>
+  <text class="t" x="785" y="265" text-anchor="middle">kube-proxy</text>
+  <rect class="box" x="540" y="301" width="320" height="46" rx="3"/>
+  <text class="t" x="700" y="329" text-anchor="middle">container runtime — containerd / CRI-O</text>
+
+  <!-- kubelet → api server (the only path) -->
+  <path class="flow-k" d="M540 85 L400 85 L400 168 L332 168" marker-end="url(#ak)"/>
+  <path class="flow-k" d="M540 260 L470 260 L470 200 L332 200" marker-end="url(#ak)"/>
+
+  <!-- ── clients ───────────────────────────────────────────────── -->
+  <rect class="box" x="150" y="430" width="180" height="52" rx="3"/>
+  <text class="t" x="240" y="455" text-anchor="middle">kubectl / CI / operators</text>
+  <text class="sub" x="240" y="472" text-anchor="middle">EVERYTHING ELSE</text>
+  <path class="flow-k" d="M240 430 L240 225" marker-end="url(#ak)"/>
+
+  <text class="sub" x="20" y="520">NO COMPONENT TALKS TO ETCD DIRECTLY — THE API SERVER IS THE ONLY WRITER.</text>
+  <text class="sub" x="20" y="540">EVERY LINE ABOVE IS A WATCH OR A WRITE AGAINST THE API SERVER.</text>
+</svg>
